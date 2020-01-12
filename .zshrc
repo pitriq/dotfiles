@@ -8,6 +8,8 @@ export ZSH="/home/pitri/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+#
+# evan2 theme from https://github.com/EvanDarwin/evan2
 ZSH_THEME="evan2"
 
 # Set list of themes to pick from when loading at random
