@@ -72,7 +72,7 @@ fpath+=~/.zfunc
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git fast-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -117,4 +117,12 @@ export PATH="$PATH":"$HOME/.poetry/bin"
 # android
 export PATH="$PATH":"$HOME/Android/Sdk/platform-tools"
 
+# jabba
 [ -s "/home/pitri/.jabba/jabba.sh" ] && source "/home/pitri/.jabba/jabba.sh"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+# nvm.sh runs `npm config get prefix` and thus, it's hella slow.
+# using `--no-use` flag, the initialization is deferred.
+# so anytime you want to use a node command, you must first call `nvm use default`
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm
