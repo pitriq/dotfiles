@@ -1,0 +1,29 @@
+! configs
+
+i3-wm.i3xrocks.config: /home/pitri/.config/regolith/i3xrocks/config
+
+! i3-wm
+
+i3-wm.gaps.inner.size: 15
+i3-wm.gaps.outer.size: 10
+
+i3-wm.window.border.size: 0
+i3-wm.floatingwindow.border.size: 0
+
+i3-wm.bar.background.color: #ffffff00
+i3-wm.bar.workspace.focused.border.color: #ffffff30
+i3-wm.bar.workspace.focused.background.color: #ffffff30
+i3-wm.bar.workspace.focused.text.color: #212121
+i3-wm.bar.workspace.inactive.border.color: #ffffff00
+i3-wm.bar.workspace.inactive.background.color: #ffffff00
+i3-wm.bar.workspace.inactive.text.color: #424242
+
+! i3xrocks
+
+i3xrocks.date.format2: + %d/%m %H:%M
+i3xrocks.label.color: #424242
+i3xrocks.value.color: #212121
+
+! gnome
+
+gnome.wallpaper: /home/pitri/Pictures/Wallpapers/grey.jpg
