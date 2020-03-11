@@ -102,6 +102,34 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# creates a flutter project with fvm
+#
+# usage: fnew DESTINATION [-v VERSION]
+# 
+# where DESTINATION is the name of the flutter project 
+# to be created and VERSION is the flutter version you wish
+# to use (defaults to beta) 
+fnew() {
+    while getopts ":v" opt; do
+      case $opt in
+        v) VERSION=$OPTARG ;;
+      esac
+    done
+        
+    DESTINATION=${@:$OPTIND:1}
+    
+    mkdir $DESTINATION
+    cd $DESTINATION
+
+    if [ -n "$VERSION" ]; then
+        fvm use $VERSION
+    else
+        fvm use beta
+    fi
+    
+    $(pwd)/fvm create .  
+}
+
 # pyenv
 export PATH="/home/pitri/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
