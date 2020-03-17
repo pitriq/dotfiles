@@ -127,7 +127,13 @@ fnew() {
         fvm use beta
     fi
     
-    $(pwd)/fvm create .  
+    mkdir .vscode
+    touch .vscode/settings.json
+    
+    echo "{\n  \"dart.flutterSdkPaths\": [\n    \"fvm\"    \n  ],\n}" > .vscode/settings.json
+    
+    $(pwd)/fvm create .      
+    
 }
 
 # pyenv
@@ -154,3 +160,7 @@ export NVM_DIR="$HOME/.nvm"
 # using `--no-use` flag, the initialization is deferred.
 # so anytime you want to use a node command, you must first call `nvm use default`
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm
+
+# protocol buffers
+PROTOBUF_PATH="$HOME/Software/protobuf"
+export PATH="$PATH":"$PROTOBUF_PATH/bin":"$PROTOBUF_PATH/include"
