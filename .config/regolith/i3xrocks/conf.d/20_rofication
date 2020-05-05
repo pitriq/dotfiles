@@ -2,5 +2,5 @@
 #
 # Displays notifications.
 [rofication]
-command=rofication-status
+command=rofication-status | sed 's/E6E1CF/212121/g'
 interval=10
