@@ -1,7 +1,3 @@
-! configs
-
-i3-wm.i3xrocks.config: /home/pitri/.config/regolith/i3xrocks/config
-
 ! i3-wm
 
 i3-wm.gaps.inner.size: 15
@@ -12,7 +8,7 @@ i3-wm.floatingwindow.border.size: 0
 
 i3-wm.bar.background.color: #ffffff00
 i3-wm.bar.workspace.focused.border.color: #ffffff30
-i3-wm.bar.workspace.focused.background.color: #ffffff30
+i3-wm.bar.workspace.focused.background.color: #ffffff40
 i3-wm.bar.workspace.focused.text.color: #212121
 i3-wm.bar.workspace.inactive.border.color: #ffffff00
 i3-wm.bar.workspace.inactive.background.color: #ffffff00
