@@ -132,8 +132,9 @@ fnew() {
     
     echo "{\n  \"dart.flutterSdkPaths\": [\n    \"fvm\"    \n  ],\n}" > .vscode/settings.json
     
-    $(pwd)/fvm create .      
-    
+    $(pwd)/fvm create .
+
+    echo "\n#fvm\nfvm" >> .gitignore
 }
 
 # pyenv
