@@ -1,0 +1,9 @@
+[user]
+	email = franpitri@gmail.com
+	name = Fran Pitriqueo
+[credential]
+	helper = cache --timeout 7200
+[alias]
+	c = commit -m
+	ac = !git add -A && git commit -m
+	s = status
