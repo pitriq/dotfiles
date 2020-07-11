@@ -40,7 +40,7 @@ fnew() {
     mkdir .vscode
     touch .vscode/settings.json
     
-    echo "{\n  \"dart.flutterSdkPaths\": [\n    \"fvm\"    \n  ],\n}" > .vscode/settings.json
+    echo "{\n  \"dart.flutterSdkPaths\": [\n    \".fvm/flutter_sdk\"    \n  ],\n}" > .vscode/settings.json
     
     $(pwd)/fvm create .
 
