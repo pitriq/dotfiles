@@ -12,6 +12,10 @@ source $ZSH/oh-my-zsh.sh
 # scrcpy
 alias cast="scrcpy -w -t"
 
+mkdirc() {
+	mkdir "$1" && cd "$1"
+}
+
 # creates a flutter project with fvm
 #
 # usage: fnew DESTINATION [-v VERSION]
