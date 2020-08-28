@@ -271,6 +271,12 @@ bindsym $mod+$alt+Ctrl+$ws7_key move container to workspace number $ws17; worksp
 bindsym $mod+$alt+Ctrl+$ws8_key move container to workspace number $ws18; workspace number $ws18
 bindsym $mod+$alt+Ctrl+$ws9_key move container to workspace number $ws19; workspace number $ws19
 
+## Custom // Development layout // <> p ##
+bindsym $mod+p [class="scrcpy"] resize set width 480; layout splith
+
+# Custom rule for flameshot
+for_window [class="flameshot" instance="flameshot"] floating enable
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
