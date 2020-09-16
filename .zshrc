@@ -46,9 +46,9 @@ fnew() {
     
     echo "{\n  \"dart.flutterSdkPaths\": [\n    \".fvm/flutter_sdk\"    \n  ],\n}" > .vscode/settings.json
     
-    $(pwd)/fvm create .
+    fvm flutter create .
 
-    echo "\n#fvm\nfvm" >> .gitignore
+    echo "\n#fvm\n.fvm" >> .gitignore
 }
 
 APP_DIR="$HOME/.local"
