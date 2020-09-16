@@ -36,9 +36,9 @@ fnew() {
     cd $DESTINATION
 
     if [ -n "$VERSION" ]; then
-        fvm use $VERSION
+        fvm use $VERSION --force
     else
-        fvm use beta
+        fvm use beta --force
     fi
     
     mkdir .vscode
