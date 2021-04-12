@@ -12,6 +12,10 @@ source $ZSH/oh-my-zsh.sh
 # scrcpy
 alias cast="scrcpy -w -t"
 
+alias gitsetp="git config user.name 'Francisco Pitriqueo' && git config user.email 'franpitri@gmail.com'"
+
+alias gitsetw="git config user.name 'Francisco Pitriqueo' && git config user.email 'francisco@sytex.io'"
+
 mkdirc() {
 	mkdir "$1" && cd "$1"
 }
