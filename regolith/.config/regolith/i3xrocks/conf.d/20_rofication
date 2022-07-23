@@ -1,0 +1,6 @@
+# Rofication
+#
+# Displays notifications.
+[rofication]
+command=rofication-status | sed -r 's/E6E1CF|FFD580/848484/g'
+interval=10

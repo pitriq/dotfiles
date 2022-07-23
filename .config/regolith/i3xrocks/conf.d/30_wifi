@@ -1,9 +1,0 @@
-# Wifi
-#
-# Displays the wifi network's name
-# If the auto-discovered wifi device is incorrect,
-# override the "instance" value with the desired device
-[wifi]
-# Replace with your wifi device if you need on next line
-#instance=wlp3s0 
-interval=5

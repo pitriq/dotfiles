@@ -1,8 +1,0 @@
-[credential]
-	helper = cache --timeout 7200
-[alias]
-	c = commit -m
-	ac = !git add -A && git commit -m
-	s = status
-	lgb = !git branch -vv | grep ': gone]' | awk '{print $1}'
-	rgb = !for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done
