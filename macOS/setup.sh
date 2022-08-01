@@ -73,8 +73,10 @@ echo "📦 Installing fvm...\n"
 pub global activate fvm
 
 # Install nvm
-echo "📦 Installing nvm...\n"
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | zsh
+echo "📦 Installing pnpm...\n"
+brew install node
+brew install pnpm
+pnpm env use --global latest
 
 # Install Android Studio
 echo "📦 Installing Android Studio...\n"
