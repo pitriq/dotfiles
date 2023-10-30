@@ -18,7 +18,7 @@ realpath() {
 
 # Creates a symlink using an absolute path
 lns () {
-  ln -s $(realpath "${1-}") "${2-}"
+  ln -sfn $(realpath "${1-}") "${2-}"
 }
 
 # --------------------------------
@@ -26,7 +26,7 @@ lns () {
 # --------------------------------
 
 # Set up .gitconfig symlink
-rm -f ~/.gitconfig && lns .gitconfig ~/
+lns .gitconfig ~/
 
 # Install homebrew
 echo "🔧 Installing Homebrew...\n"
@@ -43,17 +43,12 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
 # Set up .zshrc symlink
-rm -f ~/.zshrc && lns .zshrc ~/
+lns .zshrc ~/
 
 # Install starship
 echo "🔧 Installing starship...\n"
 brew install starship
-rm -f ~/.config/starship.toml && lns starship.toml ~/.config/
-
-# Install Fira Code
-echo "🔧 Installing Fira Code font...\n"
-brew tap homebrew/cask-fonts
-brew install --cask font-fira-code
+lns starship.toml ~/.config/
 
 # Create Developer directory
 mkdir -p ~/Developer
@@ -62,51 +57,34 @@ mkdir -p ~/Developer
 # --- 📦 Packages installation ---
 # --------------------------------
 
-# Install Java
-echo "📦 Installing ytdl...\n"
-brew install youtube-dl
+# Set up Brewfile symlink
+lns Brewfile ~/
 
-# Install Java
-echo "📦 Installing Java...\n"
-brew install openjdk@8
+# Install brew packages
+echo "📦 Installing brew packages...\n"
+brew bundle install
 
-# Install dart
-echo "📦 Installing dart...\n"
-brew tap dart-lang/dart
-brew install dart
+# Set up Java
+echo "📦 Setting up Java...\n"
+lns /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
 # Install fvm
 echo "📦 Installing fvm...\n"
 pub global activate fvm
 
-# Install nvm
-echo "📦 Installing pnpm...\n"
-brew install node
-brew install pnpm
+# Set up pnpm
+echo "📦 Setting up pnpm...\n"
 pnpm env use --global latest
 
-# Install Android Studio
-echo "📦 Installing Android Studio...\n"
-brew install --cask android-studio
-
-# Install Hyper
-echo "📦 Installing hyper...\n"
-brew install --cask hyper
+# Set up Hyper
+echo "📦 Setting up hyper...\n"
 rm -f ~/.hyper.js && lns .hyper.js ~/.hyper.js
-
-# Install Figma
-echo "📦 Installing Figma...\n"
-brew install --cask figma
-
-# Install cocoapods
-echo "📦 Installing cocoapods...\n"
-# TODO: remove the need of using sudo
-# https://guides.cocoapods.org/using/getting-started.html#getting-started
-sudo gem install cocoapods
 
 # XCode
 echo "🚀 You're all set up!\n"
 echo "To install XCode go to https://apps.apple.com/us/app/xcode/id497799835"
 echo "You'll then need to run the following commands:\n"
+echo "sudo xcode-select --install"
 echo "sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer"
 echo "sudo xcodebuild -runFirstLaunch"
+echo "xcodebuild -downloadPlatform iOS"

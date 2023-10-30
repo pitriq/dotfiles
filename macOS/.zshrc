@@ -17,6 +17,7 @@ alias arm="arch -arm64"
 alias ytdl="youtube-dl -x --audio-format mp3"
 alias dev="cd $HOME/Developer"
 alias sytex="cd $HOME/Developer/apps/sytex"
+alias brewdump="brew bundle dump --formula --cask --tap"
 
 # --------------------------------
 # --------- 🐙 Functions ---------
