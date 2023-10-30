@@ -55,9 +55,16 @@ echo "🔧 Installing Fira Code font...\n"
 brew tap homebrew/cask-fonts
 brew install --cask font-fira-code
 
+# Create Developer directory
+mkdir -p ~/Developer
+
 # --------------------------------
 # --- 📦 Packages installation ---
 # --------------------------------
+
+# Install Java
+echo "📦 Installing ytdl...\n"
+brew install youtube-dl
 
 # Install Java
 echo "📦 Installing Java...\n"

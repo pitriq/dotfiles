@@ -15,6 +15,8 @@ source $ZSH/oh-my-zsh.sh
 alias intel="arch -x86_64"
 alias arm="arch -arm64"
 alias ytdl="youtube-dl -x --audio-format mp3"
+alias dev="cd $HOME/Developer"
+alias sytex="cd $HOME/Developer/apps/sytex"
 
 # --------------------------------
 # --------- 🐙 Functions ---------
@@ -30,11 +32,13 @@ function create_fvm_config() {
 
 # Creates a flutter project with fvm
 #
-# Usage: create_fvm_project DESTINATION [-v VERSION]
+# Usage: create_fvm_project DESTINATION [-v VERSION] [-b ORG_BUNDLE_ID]
 # 
-# Where DESTINATION is the name of the flutter project 
+# DESTINATION is the name of the flutter project 
 # to be created and VERSION is the flutter version you wish
-# to use (defaults to 'beta').
+# to use (defaults to 'stable').
+# 
+# ORG_BUNDLE_ID is the bundle id of the organization you're working for.
 function create_fvm_project() {
   # Check if fvm is available
   if ! command -v fvm &> /dev/null
@@ -43,10 +47,26 @@ function create_fvm_project() {
       exit 1
   fi
   
-  # Get the version parameter, if specified
-  while getopts ":v" opt; do
+  # Get the version parameter. Defaults to 'stable'
+  VERSION="stable"
+  while getopts ":v:" opt; do
     case $opt in
       v) VERSION=$OPTARG ;;
+    esac
+  done
+
+  # Get the bundle id parameter, if specified
+  while getopts ":b" opt; do
+    case $opt in
+      b) ORG_BUNDLE_ID=$OPTARG ;;
+    esac
+  done
+
+  # Get the platforms paremeter. Defaults to "ios,android"
+  PLATFORMS="ios,android"
+  while getopts ":p" opt; do
+    case $opt in
+      p) PLATFORMS=$OPTARG ;;
     esac
   done
       
@@ -56,14 +76,14 @@ function create_fvm_project() {
   cd $DESTINATION
 
   # Setup fvm in the destination directory using VERSION
-  if [ -n "$VERSION" ]; then
-    fvm use $VERSION --force
-  else
-    fvm use beta --force
-  fi
+  fvm use $VERSION --force
 
-  # Create the actual project
-  fvm flutter create .
+  # Create the actual project. If the org bundle id is specified, use it
+  if [ -n "$ORG_BUNDLE_ID" ]; then
+    fvm flutter create --org $ORG_BUNDLE_ID --platforms $PLATFORMS .
+  else
+    fvm flutter create --platforms $PLATFORMS .
+  fi
 
   # Create vscode config file
   $(create_fvm_config)
@@ -85,6 +105,9 @@ function create_fvm_project() {
 export PATH=/usr/local/bin:$PATH
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# local binaries
+export PATH="$HOME/.local/bin":"$PATH"
+
 # starship
 eval "$(starship init zsh)"
 
@@ -95,8 +118,4 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 export PATH="$HOME/Library/Android/sdk/emulator":"$HOME/Library/Android/sdk/tools":"$HOME/Library/Android/sdk/platform-tools":"$PATH"
 
 # Java
-export JAVA_HOME=$(/usr/libexec/java_home)
-
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)
