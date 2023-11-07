@@ -68,10 +68,6 @@ brew bundle install
 echo "📦 Setting up Java...\n"
 lns /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
-# Install fvm
-echo "📦 Installing fvm...\n"
-pub global activate fvm
-
 # Set up pnpm
 echo "📦 Setting up pnpm...\n"
 pnpm env use --global latest
