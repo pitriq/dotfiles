@@ -115,6 +115,9 @@ eval "$(starship init zsh)"
 # dart pub
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 
+# fvm default flutter sdk
+export PATH="$PATH":"$HOME/fvm/default/bin"
+
 # Android
 export PATH="$HOME/Library/Android/sdk/emulator":"$HOME/Library/Android/sdk/tools":"$HOME/Library/Android/sdk/platform-tools":"$PATH"
 
