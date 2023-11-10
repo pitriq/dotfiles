@@ -2,9 +2,11 @@
     c = commit -m
     ac = !git add -A && git commit -m
     s = status
-    list_gone_branches = !git fetch -p && git branch -vv | grep ': gone]' | awk '{print $1}'
-    remove_gone_branches = "!for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D 
-$branch; done"
+    list-gone-branches = !git fetch -p && git branch -vv | grep ': gone]' | awk '{print $1}'
+    remove-gone-branches = "!for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
+    last-commit-date = "!sh -c 'if [ -z \"$GIT_PREFIX\" ]; then git --no-pager log -n 1 --pretty=format:\"📆 [%cd]\" --date=format-local:\"%Y-%m-%d %H:%M:%S\"; else git --no-pager log -n 1 --pretty=format:\"📆 [%cd]\" --date=format-local:\"%Y-%m-%d %H:%M:%S\" -- \"$GIT_PREFIX\"; fi' -"
+    files-changed-after = "!sh -c 'input_date=\"$1\"; for file in $(git ls-files ${GIT_PREFIX:-.}); do last_commit_date=$(git log -1 --format=%cd --date=short -- \"$file\"); if [[ \"$last_commit_date\" > \"$input_date\" ]]; then echo \"📆 [$last_commit_date] $(echo \"$file\" | sed -e \"s|$GIT_PREFIX||\")\"; fi; done | sort -r' -"
+    commits-after = "!sh -c 'input_date=\"$1\"; if [ -z \"$GIT_PREFIX\" ]; then git --no-pager log --since=\"$input_date\" --pretty=format:\"[%s] 🔗 %h 📆 [%cd]\" --date=short --name-only; else git --no-pager log --since=\"$input_date\" --pretty=format:\"[%s] 🔗 %h 📆 [%cd]\" --date=short --name-only -- \"$GIT_PREFIX\"; fi' -"
 [core]
     editor = code --wait
 [init]
