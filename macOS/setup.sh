@@ -42,13 +42,28 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# Set up .zshrc symlink
-lns .zshrc ~/
-
 # Install starship
 echo "🔧 Installing starship...\n"
 brew install starship
 lns starship.toml ~/.config/
+
+# Set up .zshrc symlink
+lns .zshrc ~/
+
+# System tweaks
+# Finder: Show status bar and path bar
+defaults write com.apple.finder ShowStatusBar -bool true
+defaults write com.apple.finder ShowPathbar -bool true
+# Finder: Disable the warning when changing a file extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+# Safari: Enable Safari’s Developer Settings
+defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
+# Safari: Show the full URL in the address bar (note: this still hides the scheme)
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 
 # Create Developer directory
 mkdir -p ~/Developer
@@ -71,6 +86,10 @@ lns /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachi
 # Set up pnpm
 echo "📦 Setting up pnpm...\n"
 pnpm env use --global latest
+
+# Set up fvm
+echo "📦 Setting up fvm...\n"
+fvm install stable && fvm global stable
 
 # Set up Hyper
 echo "📦 Setting up hyper...\n"
