@@ -1,13 +1,63 @@
 [alias]
+    # * Commits
     c = commit -m
     ac = !git add -A && git commit -m
-    s = status
-    list-gone-branches = !git fetch -p && git branch -vv | grep ': gone]' | awk '{print $1}'
-    remove-gone-branches = "!for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
+    
+    # Amend the currently staged files to the latest commit
+    amend = commit --amend --reuse-message=HEAD
+
+    # * Info
+    # View the current working tree status using the short format
+    s = status -s
+    
+    # Show verbose output about tags, branches or remotes
+    tags = tag -l
+    branches = branch -a
+    remotes = remote -v
+
+    # Show the diff between the latest commit and the current state
+    d = !"git diff-index --quiet HEAD; git --no-pager diff --patch-with-stat"
+
+    # Get the date of the last commit in the current directory.
     last-commit-date = "!sh -c 'if [ -z \"$GIT_PREFIX\" ]; then git --no-pager log -n 1 --pretty=format:\"📆 [%cd]\" --date=format-local:\"%Y-%m-%d %H:%M:%S\"; else git --no-pager log -n 1 --pretty=format:\"📆 [%cd]\" --date=format-local:\"%Y-%m-%d %H:%M:%S\" -- \"$GIT_PREFIX\"; fi' -"
+    
+    # List every commit in the current directory, after a certain date.
+    # USAGE: git files-changed-after YYYY-MM-DD
     files-changed-after = "!sh -c 'input_date=\"$1\"; for file in $(git ls-files ${GIT_PREFIX:-.}); do last_commit_date=$(git log -1 --format=%cd --date=short -- \"$file\"); if [[ \"$last_commit_date\" > \"$input_date\" ]]; then echo \"📆 [$last_commit_date] $(echo \"$file\" | sed -e \"s|$GIT_PREFIX||\")\"; fi; done | sort -r' -"
+    
+    # List every commit in the current directory, after a certain date.
+    # USAGE: git commits-after YYYY-MM-DD
     commits-after = "!sh -c 'input_date=\"$1\"; if [ -z \"$GIT_PREFIX\" ]; then git --no-pager log --since=\"$input_date\" --pretty=format:\"[%s] 🔗 %h 📆 [%cd]\" --date=short --name-only; else git --no-pager log --since=\"$input_date\" --pretty=format:\"[%s] 🔗 %h 📆 [%cd]\" --date=short --name-only -- \"$GIT_PREFIX\"; fi' -"
+
+    # * Branches
+    # Switch to a branch, creating it if necessary
+    go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+
+    # List local branches that have been deleted from remote.
+    list-gone-branches = !git fetch -p && git branch -vv | grep ': gone]' | awk '{print $1}'
+
+    # Remove local branches that have been deleted from remote.
+    remove-gone-branches = "!for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
+
 [core]
     editor = code --wait
+
+    # * URL shorthands
+    [url "git@github.com:"]
+        insteadOf = "gh:"
+        pushInsteadOf = "github:"
+        pushInsteadOf = "git://github.com/"
+
+    [url "git://github.com/"]
+        insteadOf = "github:"
+
+    [url "git@gist.github.com:"]
+        insteadOf = "gst:"
+        pushInsteadOf = "gist:"
+        pushInsteadOf = "git://gist.github.com/"
+
+    [url "git://gist.github.com/"]
+        insteadOf = "gist:"
+
 [init]
     defaultBranch = main
