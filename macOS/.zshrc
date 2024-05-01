@@ -16,7 +16,8 @@ alias intel="arch -x86_64"
 alias arm="arch -arm64"
 alias ytdl="youtube-dl -x --audio-format mp3"
 alias dev="cd $HOME/Developer"
-alias sytex="cd $HOME/Developer/apps/sytex"
+alias dots="cd $HOME/Developer/me/dotfiles/macOS"
+alias work="cd $HOME/Developer/apps/sytex"
 alias brewdump="brew bundle dump --formula --cask --tap"
 
 # --------------------------------
