@@ -24,6 +24,10 @@ alias brewdump="brew bundle dump --formula --cask --tap"
 # --------- 🐙 Functions ---------
 # --------------------------------
 
+function work_simulator() {
+  cd $(xcrun simctl get_app_container booted io.siteplan.sytex data)
+}
+
 function create_fvm_config() {
   mkdir -p .vscode
   touch .vscode/settings.json
@@ -123,4 +127,10 @@ export PATH="$PATH":"$HOME/fvm/default/bin"
 export PATH="$HOME/Library/Android/sdk/emulator":"$HOME/Library/Android/sdk/tools":"$HOME/Library/Android/sdk/platform-tools":"$PATH"
 
 # Java
-export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /Users/pitri/.dart-cli-completion/zsh-config.zsh ]] && . /Users/pitri/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
