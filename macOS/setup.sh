@@ -81,7 +81,7 @@ brew bundle install
 
 # Set up Java
 echo "📦 Setting up Java...\n"
-lns /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+lns /usr/local/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
 
 # Set up pnpm
 echo "📦 Setting up pnpm...\n"
