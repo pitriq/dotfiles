@@ -19,6 +19,7 @@ alias dev="cd $HOME/Developer"
 alias dots="cd $HOME/Developer/me/dotfiles/macOS"
 alias work="cd $HOME/Developer/apps/sytex"
 alias brewdump="brew bundle dump --formula --cask --tap"
+alias baptise="sudo xattr -d com.apple.quarantine"
 
 # --------------------------------
 # --------- 🐙 Functions ---------
