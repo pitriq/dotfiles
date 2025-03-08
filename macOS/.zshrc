@@ -14,10 +14,11 @@ source $ZSH/oh-my-zsh.sh
 
 alias intel="arch -x86_64"
 alias arm="arch -arm64"
-alias ytdl="youtube-dl -x --audio-format mp3"
+alias ytdl="yt-dlp -x --audio-format mp3"
 alias dev="cd $HOME/Developer"
 alias dots="cd $HOME/Developer/me/dotfiles/macOS"
 alias work="cd $HOME/Developer/apps/sytex"
+alias dl="cd $HOME/Downloads"
 alias brewdump="brew bundle dump --formula --cask --tap"
 alias baptise="sudo xattr -d com.apple.quarantine"
 
@@ -124,6 +125,9 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 # fvm default flutter sdk
 export PATH="$PATH":"$HOME/fvm/default/bin"
 
+# shorebird
+export PATH="$HOME/.shorebird/bin":"$PATH"
+
 # Android
 export PATH="$HOME/Library/Android/sdk/emulator":"$HOME/Library/Android/sdk/tools":"$HOME/Library/Android/sdk/platform-tools":"$PATH"
 
@@ -134,4 +138,3 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f /Users/pitri/.dart-cli-completion/zsh-config.zsh ]] && . /Users/pitri/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
-
