@@ -64,3 +64,6 @@
 
 [pull]
     rebase = true
+[user]
+	name = Francisco Pitriqueo
+	email = franpitri@gmail.com

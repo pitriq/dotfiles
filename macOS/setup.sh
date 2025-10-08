@@ -9,7 +9,7 @@ realpath() {
   LINK=$(readlink "$(basename "$1")")
   while [ "$LINK" ]; do
     cd "$(dirname "$LINK")"
-    LINK=$(readlink "$(basename "$1")")
+    LINK=$(readlink "$(basename "$LINK")")
   done
   REALPATH="$PWD/$(basename "$1")"
   cd "$ORIGIN_DIR"
@@ -25,8 +25,19 @@ lns () {
 # ------- 🔧 Basic set up --------
 # --------------------------------
 
+# Ensure we're in the correct directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# Set up .zshrc symlink
+lns .zshrc ~/.zshrc
+
 # Set up .gitconfig symlink
-lns .gitconfig ~/
+lns .gitconfig ~/.gitconfig
+
+# Set up aliases and functions
+lns aliases.sh ~/Developer/me/dotfiles/macOS/aliases.sh
+lns functions.sh ~/Developer/me/dotfiles/macOS/functions.sh
 
 # Install homebrew
 echo "🔧 Installing Homebrew...\n"
@@ -34,21 +45,21 @@ NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ho
 
 # Install zsh & oh-my-zsh
 echo "🔧 Setting up Zsh...\n"
-brew install zsh && \
-chsh -s /usr/local/bin/zsh && \
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Install oh-my-zsh plugins
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
+if [ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+fi
 
 # Install starship
 echo "🔧 Installing starship...\n"
 brew install starship
-lns starship.toml ~/.config/
-
-# Set up .zshrc symlink
-lns .zshrc ~/
+mkdir -p ~/.config
+lns starship.toml ~/.config/starship.toml
 
 # System tweaks
 # Finder: Show status bar and path bar
@@ -56,14 +67,6 @@ defaults write com.apple.finder ShowStatusBar -bool true
 defaults write com.apple.finder ShowPathbar -bool true
 # Finder: Disable the warning when changing a file extension
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
-# Safari: Enable Safari’s Developer Settings
-defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
-defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
-# Safari: Show the full URL in the address bar (note: this still hides the scheme)
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 
 # Create Developer directory
 mkdir -p ~/Developer
@@ -73,7 +76,7 @@ mkdir -p ~/Developer
 # --------------------------------
 
 # Set up Brewfile symlink
-lns Brewfile ~/
+lns Brewfile ~/Brewfile
 
 # Install brew packages
 echo "📦 Installing brew packages...\n"
@@ -81,11 +84,7 @@ brew bundle install
 
 # Set up Java
 echo "📦 Setting up Java...\n"
-lns /usr/local/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
-
-# Set up pnpm
-echo "📦 Setting up pnpm...\n"
-pnpm env use --global latest
+sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 
 # Set up fvm
 echo "📦 Setting up fvm...\n"
