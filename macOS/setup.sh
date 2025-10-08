@@ -36,8 +36,9 @@ lns .zshrc ~/.zshrc
 lns .gitconfig ~/.gitconfig
 
 # Set up aliases and functions
-lns aliases.sh ~/Developer/me/dotfiles/macOS/aliases.sh
-lns functions.sh ~/Developer/me/dotfiles/macOS/functions.sh
+mkdir -p ~/.config
+lns aliases.sh ~/.config/aliases.sh
+lns functions.sh ~/.config/functions.sh
 
 # Install homebrew
 echo "🔧 Installing Homebrew...\n"

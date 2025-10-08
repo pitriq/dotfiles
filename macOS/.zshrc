@@ -12,13 +12,13 @@ source $ZSH/oh-my-zsh.sh
 # ---------- 👨🏻‍💻 Aliases ----------
 # --------------------------------
 
-source "$HOME/Developer/me/dotfiles/macOS/aliases.sh"
+source "$HOME/.config/aliases.sh"
 
 # --------------------------------
 # --------- 🐙 Functions ---------
 # --------------------------------
 
-source "$HOME/Developer/me/dotfiles/macOS/functions.sh"
+source "$HOME/.config/functions.sh"
 
 # --------------------------------
 # ---------- 🔧 Exports ----------
