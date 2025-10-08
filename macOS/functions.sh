@@ -111,33 +111,60 @@ function timestamp() {
 }
 
 symbolicate() {
-  local STACKTRACE="$1"
-  local SYMBOLS="$2"
-  local OUTPUT="$3"
+  local STACKTRACE=$1
+  local SYMBOLS=$2
+  local OUTPUT=$3
 
-  if [[ -z "$STACKTRACE" || -z "$SYMBOLS" ]]; then
+  if [ -z "$STACKTRACE" ] || [ -z "$SYMBOLS" ]; then
     echo "Usage: symbolicate <stacktrace.txt> <symbols_file> [output_file]"
-    echo "If output_file is not given, it becomes <stacktrace>_symbolicated.txt"
+    echo ""
+    echo "If output_file is not specified, it will be named: <stacktrace>_symbolicated.txt"
     return 1
   fi
 
-  [[ ! -f "$STACKTRACE" ]] && echo "Error: Stack trace not found: $STACKTRACE" && return 1
-  [[ ! -f "$SYMBOLS" ]] && echo "Error: Symbols file not found: $SYMBOLS" && return 1
+  # Set default output file if not provided
+  if [ -z "$OUTPUT" ]; then
+    OUTPUT="${STACKTRACE%.*}_symbolicated.txt"
+  fi
 
-  [[ -z "$OUTPUT" ]] && OUTPUT="${STACKTRACE%.*}_symbolicated.txt"
+  if [ ! -f "$STACKTRACE" ]; then
+    echo "Error: Stack trace file not found: $STACKTRACE"
+    return 1
+  fi
 
-  # Locate addr2line tool
+  if [ ! -f "$SYMBOLS" ]; then
+    echo "Error: Symbols file not found: $SYMBOLS"
+    return 1
+  fi
+
+  # Find the right addr2line tool for macOS
   local ADDR2LINE=""
-  local NDK_PATH="$HOME/Library/Android/sdk/ndk"
-  [[ -d "$NDK_PATH" ]] && ADDR2LINE=$(find "$NDK_PATH" -name "llvm-addr2line" 2>/dev/null | head -n 1)
-  [[ -z "$ADDR2LINE" && $(command -v llvm-addr2line) ]] && ADDR2LINE="llvm-addr2line"
-  [[ -z "$ADDR2LINE" && $(command -v addr2line) ]] && ADDR2LINE="addr2line" && echo "Warning: Using system addr2line — may not work with Android ELF files"
 
-  if [[ -z "$ADDR2LINE" ]]; then
-    echo "Error: No addr2line found!"
-    echo "Install either:"
-    echo "  • Android NDK (contains llvm-addr2line)"
-    echo "  • LLVM via Homebrew: brew install llvm"
+  # Try Android NDK llvm-addr2line first (latest Android NDK versions)
+  if [ -d "$HOME/Library/Android/sdk/ndk" ]; then
+    local NDK_LLVM_ADDR2LINE=$(find "$HOME/Library/Android/sdk/ndk" -name "llvm-addr2line" 2>/dev/null | head -n 1)
+    if [ ! -z "$NDK_LLVM_ADDR2LINE" ]; then
+      ADDR2LINE="$NDK_LLVM_ADDR2LINE"
+    fi
+  fi
+
+  # Try system llvm-addr2line (from Homebrew LLVM)
+  if [ -z "$ADDR2LINE" ] && command -v llvm-addr2line &> /dev/null; then
+    ADDR2LINE="llvm-addr2line"
+  fi
+
+  # Try regular addr2line as last resort (might not work on macOS)
+  if [ -z "$ADDR2LINE" ] && command -v addr2line &> /dev/null; then
+    ADDR2LINE="addr2line"
+    echo "Warning: Using system addr2line - may not work with Android ELF files"
+  fi
+
+  if [ -z "$ADDR2LINE" ]; then
+    echo "Error: No suitable addr2line tool found!"
+    echo ""
+    echo "Please install one of the following:"
+    echo "  1. Android NDK (should contain llvm-addr2line at ~/Library/Android/sdk/ndk)"
+    echo "  2. LLVM tools: brew install llvm"
     return 1
   fi
 
@@ -145,34 +172,42 @@ symbolicate() {
   echo "Input: $STACKTRACE"
   echo "Symbols: $SYMBOLS"
   echo "Output: $OUTPUT"
-  echo "----------------------------------------"
-  echo "Symbolicating..."
+  echo "Symbolicating stack trace..."
+  echo ""
 
-  > "$OUTPUT"
+  # Clear/create output file
+  echo -n "" > "$OUTPUT"
 
+  # Process each line with a program counter (pc)
   while IFS= read -r line; do
+    # Check if line contains "pc 0x"
     if [[ $line =~ pc\ (0x[0-9a-f]+) ]]; then
-      local addr="${BASH_REMATCH[1]}"
-      local result
-      result=$("$ADDR2LINE" -e "$SYMBOLS" -f -C -i "$addr" 2>/dev/null)
-
-      if [[ $result != "??"* && -n "$result" ]]; then
-        local func_name=$(echo "$result" | head -n1)
-        local file_loc=$(echo "$result" | tail -n1)
-        {
-          echo "$line"
-          echo "  → $func_name"
-          echo "    at $file_loc"
-          echo
-        } >> "$OUTPUT"
+      local addr="${match[1]}"
+      
+      # Get the function name and location
+      local result=$("$ADDR2LINE" -e "$SYMBOLS" -f -C -i "$addr" 2>/dev/null)
+      
+      # Check if we got a valid result (not just "??")
+      if [[ $result != "??"* ]] && [[ ! -z "$result" ]]; then
+        # Format: function name on first line, file:line on second
+        local func_name=$(echo "$result" | head -n 1)
+        local file_loc=$(echo "$result" | tail -n 1)
+        
+        echo "$line" >> "$OUTPUT"
+        echo "  → $func_name" >> "$OUTPUT"
+        echo "    at $file_loc" >> "$OUTPUT"
+        echo "" >> "$OUTPUT"
       else
+        # If symbolication failed, just print the original line
         echo "$line (no symbol found)" >> "$OUTPUT"
       fi
     elif [[ $line =~ ^[[:space:]]*at ]]; then
+      # Java stack trace line, write as-is
       echo "$line" >> "$OUTPUT"
     fi
   done < "$STACKTRACE"
 
   echo "========================================"
-  echo "Done! Output: $OUTPUT"
+  echo "Symbolication complete!"
+  echo "Output written to: $OUTPUT"
 }
