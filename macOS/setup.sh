@@ -91,9 +91,11 @@ sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/Java
 echo "📦 Setting up fvm...\n"
 fvm install stable && fvm global stable
 
-# Set up Hyper
-echo "📦 Setting up hyper...\n"
-rm -f ~/.hyper.js && lns .hyper.js ~/.hyper.js
+# Set up Alacritty
+echo "📦 Setting up Alacritty...\n"
+mkdir -p ~/.config/alacritty
+lns alacritty.toml ~/.config/alacritty/alacritty.toml
+lns rose-pine-moon.toml ~/.config/alacritty/rose-pine-moon.toml
 
 # XCode
 echo "🚀 You're all set up!\n"

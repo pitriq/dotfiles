@@ -1,0 +1,50 @@
+# Alacritty Configuration
+
+# General configuration
+[general]
+# Import Rose Pine Moon theme
+# Place the theme file in the same directory or update the path accordingly
+# Download from: https://github.com/rose-pine/alacritty
+import = ["rose-pine-moon.toml"]
+
+# Font configuration
+[font]
+normal = { family = "Cartograph CF", style = "Regular" }
+bold = { family = "Cartograph CF", style = "Bold" }
+italic = { family = "Cartograph CF", style = "Regular Italic" }
+bold_italic = { family = "Cartograph CF", style = "Bold Italic" }
+size = 12.0
+
+# Window configuration
+[window]
+padding = { x = 32, y = 24 }
+opacity = 1.0
+decorations = "Full"
+startup_mode = "Windowed"
+
+# Cursor configuration
+[cursor]
+unfocused_hollow = true
+
+[cursor.style]
+shape = "Block"
+blinking = "Off"
+
+# Scrolling
+[scrolling]
+history = 10000
+multiplier = 3
+
+# Selection
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>"
+
+# Mouse
+[mouse]
+hide_when_typing = false
+
+# Bell (duration = 0 disables the bell)
+[bell]
+duration = 0
+animation = "EaseOutExpo"
+
