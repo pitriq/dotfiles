@@ -22,6 +22,10 @@ opacity = 1.0
 decorations = "Full"
 startup_mode = "Windowed"
 
+[window.dimensions]
+columns = 180
+lines = 50
+
 # Cursor configuration
 [cursor]
 unfocused_hollow = true
@@ -48,3 +52,11 @@ hide_when_typing = false
 duration = 0
 animation = "EaseOutExpo"
 
+[keyboard]
+bindings = [
+  { key = "Left",  mods = "Alt",     chars = "\u001bB"   },
+  { key = "Right", mods = "Alt",     chars = "\u001bF"   },
+  { key = "Left",  mods = "Command", chars = "\u001bOH"  },
+  { key = "Right", mods = "Command", chars =  "\u001bOF" },
+  { key = "Back",  mods = "Command", chars = "\u0015"    },
+]
