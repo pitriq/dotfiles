@@ -101,11 +101,10 @@ sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/Java
 echo "📦 Setting up fvm..."
 fvm install stable && fvm global stable
 
-# Set up Alacritty
-echo "📦 Setting up Alacritty..."
-mkdir -p ~/.config/alacritty
-lns alacritty.toml ~/.config/alacritty/alacritty.toml
-lns rose-pine-moon.toml ~/.config/alacritty/rose-pine-moon.toml
+# Set up Ghostty
+echo "👻 Setting up Ghostty..."
+mkdir -p ~/.config/ghostty
+lns ghostty/config ~/.config/ghostty/config
 
 # XCode
 echo "🚀 You're all set up!"
