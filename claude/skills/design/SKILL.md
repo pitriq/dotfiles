@@ -10,7 +10,7 @@ Help the user flesh out their idea into a complete specification.
 ## Process
 
 1. **Listen** to the user's problem or idea description
-2. **Ask clarifying questions** only when there are genuine ambiguities or gaps that would affect implementation:
+2. **Ask clarifying questions** using the `AskUserQuestion` tool when there are genuine ambiguities or gaps that would affect implementation:
    - Unclear scope or boundaries
    - Missing edge cases that could cause issues
    - Integration points with existing systems
@@ -21,9 +21,13 @@ Help the user flesh out their idea into a complete specification.
 
 ## Guidelines
 
-- Be conversational, not interrogative
-- Group related questions together
-- Accept "I don't know yet" or "doesn't matter" as valid answers
+- **Always use the `AskUserQuestion` tool** for clarifying questions - this provides a better UX with selectable options
+- You can ask up to 4 questions at once, each with 2-4 options
+- Write concise option labels (1-5 words) with helpful descriptions
+- Use `multiSelect: true` when choices aren't mutually exclusive
+- Users can always select "Other" to provide custom input
+- Group related questions in a single tool call when possible
+- Accept "Other" responses gracefully and follow up if needed
 - Use your judgment - simple features need fewer questions
 - Explore the codebase if needed to understand existing patterns and constraints
 - The spec should be actionable for implementation planning
