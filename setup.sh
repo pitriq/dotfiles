@@ -112,6 +112,7 @@ mkdir -p ~/.claude
 lns claude/settings.json ~/.claude/settings.json
 lns claude/statusline.sh ~/.claude/statusline.sh
 lns claude/skills ~/.claude/skills
+lns claude/commands ~/.claude/commands
 
 # Set wallpaper
 echo "🖼️ Setting wallpaper..."
