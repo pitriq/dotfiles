@@ -1,0 +1,32 @@
+theme = Rose Pine Moon
+
+# Font configuration
+font-family = Cartograph CF
+font-size = 12
+font-thicken = true
+font-feature = calt, liga, dlig
+
+# Window configuration
+window-padding-x = 32
+window-padding-y = 24
+background-opacity = 1.0
+window-decoration = true
+
+# Window dimensions (in cells)
+window-width = 160
+window-height = 50
+
+# Cursor configuration
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+
+# Scrolling
+scrollback-limit = 300000
+
+# Mouse
+mouse-hide-while-typing = false
+
+# macOS specific
+macos-option-as-alt = true
+keybind = shift+enter=text:\x1b\r

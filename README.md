@@ -1,7 +1,20 @@
-## Hey
+# dotfiles
 
-Hi there, these are my dots. I'm currently using macOS... so little to no rice.
+my dots :)
 
-If you really wanted to, you could run `setup.sh`, found inside `macOS/` to, uhm, set it up. You'd probably need to change my username for yours in some of the config files though.
+## Setup
 
-`wallpapers` are screenshots taken & enahanced by [benvrakas](https://www.flickr.com/photos/147283717@N03/).
+```bash
+git clone https://github.com/pitriq/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./setup.sh
+```
+
+## What's in here?
+
+- Zsh with oh-my-zsh, autosuggestions, and syntax highlighting
+- Starship prompt
+- Homebrew packages (via Brewfile)
+- Git configuration
+- Ghostty terminal config
+- Custom aliases and functions
