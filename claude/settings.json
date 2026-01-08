@@ -3,5 +3,35 @@
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline.sh"
+  },
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:*)",
+      "Fetch(*)",
+      "WebSearch",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(ln:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(echo:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(pkill:*)",
+      "Bash(lsof:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(bun:*)",
+      "Bash(bunx:*)",
+      "Bash(dart:*)",
+      "Bash(fvm:*)",
+      "Bash(melos:*)"
+    ]
   }
 }
