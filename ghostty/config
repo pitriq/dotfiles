@@ -14,7 +14,7 @@ window-decoration = true
 
 # Window dimensions (in cells)
 window-width = 160
-window-height = 50
+window-height = 52
 
 # Cursor configuration
 cursor-style = block
@@ -22,7 +22,7 @@ cursor-style-blink = false
 shell-integration-features = no-cursor
 
 # Scrolling
-scrollback-limit = 300000
+scrollback-limit = 500000
 
 # Mouse
 mouse-hide-while-typing = false
