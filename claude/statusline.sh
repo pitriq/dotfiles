@@ -7,7 +7,6 @@ input=$(cat)
 dir=$(echo "$input" | jq -r '.workspace.current_dir')
 dir_name=$(basename "$dir")
 model=$(echo "$input" | jq -r '.model.display_name')
-usage=$(echo "$input" | jq '.context_window.current_usage')
 
 # Check for git branch
 git_branch=""
@@ -31,14 +30,8 @@ RED='\033[31m'
 WHITE='\033[37m'
 RESET='\033[0m'
 
-# Calculate percentage (default to 0 if no usage yet)
-if [ "$usage" != "null" ]; then
-    current=$(echo "$usage" | jq '.input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens')
-    size=$(echo "$input" | jq '.context_window.context_window_size')
-    pct=$((current * 100 / size))
-else
-    pct=0
-fi
+# Get percentage directly from context_window
+pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0')
 
 # Build progress bar (10 blocks total)
 filled=$((pct / 10))
