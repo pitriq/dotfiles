@@ -32,9 +32,7 @@
       "Bash(bunx:*)",
       "Bash(dart:*)",
       "Bash(fvm:*)",
-      "Bash(melos format:*)",
-      "Bash(melos test:*)",
-      "Bash(melos analyze:*)"
+      "Bash(melos:*)"
     ]
   }
 }

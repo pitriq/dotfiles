@@ -1,6 +1,6 @@
 ---
+name: deslop
 description: Remove AI-generated code slop from current branch
-allowed-tools: Bash, Read, Edit, Grep, Glob
 ---
 
 # Remove AI Code Slop
