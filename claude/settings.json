@@ -6,10 +6,13 @@
   },
   "permissions": {
     "allow": [
-      "WebFetch(domain:*)",
-      "Fetch(*)",
+      "WebFetch",
+      "Fetch",
       "WebSearch",
-      "Read(*)",
+      "Read",
+      "Write(//tmp/**)",
+      "Edit(//tmp/**)",
+      "Read(//tmp/**)",
       "Bash(mkdir:*)",
       "Bash(touch:*)",
       "Bash(mv:*)",
@@ -18,21 +21,23 @@
       "Bash(ls:*)",
       "Bash(chmod:*)",
       "Bash(echo:*)",
+      "Bash(cat:*)",
       "Bash(sed:*)",
       "Bash(awk:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
+      "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(grep:*)",
       "Bash(pkill:*)",
       "Bash(lsof:*)",
       "Bash(curl:*)",
       "Bash(wget:*)",
+      "Bash(just:*)",
       "Bash(bun:*)",
       "Bash(bunx:*)",
       "Bash(dart:*)",
-      "Bash(fvm:*)",
-      "Bash(melos:*)"
+      "Bash(fvm:*)"
     ]
   }
 }
