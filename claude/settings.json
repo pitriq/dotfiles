@@ -41,7 +41,17 @@
       "Bash(bun:*)",
       "Bash(bunx:*)",
       "Bash(dart:*)",
-      "Bash(fvm:*)"
+      "Bash(fvm:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git blame:*)",
+      "Bash(git shortlog:*)",
+      "Bash(git remote:*)",
+      "Bash(git fetch:*)"
     ]
   }
 }
