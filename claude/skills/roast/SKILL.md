@@ -62,7 +62,7 @@ Parse the user's request to determine what to analyze:
 
 Structure your response as:
 
-### Verdict: [SOLID | COULD BE BETTER | NEEDS WORK]
+### Verdict: [GOOD | MID | BAD]
 
 **What it does right:**
 - List genuine strengths (not filler praise)
