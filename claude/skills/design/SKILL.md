@@ -10,14 +10,15 @@ Help the user flesh out their idea into a complete specification.
 ## Process
 
 1. **Listen** to the user's problem or idea description
-2. **Ask clarifying questions** using the `AskUserQuestion` tool when there are genuine ambiguities or gaps that would affect implementation:
+2. **Explore** the codebase to understand existing patterns, conventions, and integration points relevant to the user's idea
+3. **Ask clarifying questions** using the `AskUserQuestion` tool when there are genuine ambiguities or gaps that would affect implementation:
    - Unclear scope or boundaries
    - Missing edge cases that could cause issues
    - Integration points with existing systems
    - Constraints (performance, security, compatibility)
    - User-facing behavior that needs definition
-3. **Stop asking** when you have enough to write a useful spec - don't over-question
-4. **Generate** a spec.md file using the template in [spec-template.md](spec-template.md)
+4. **Stop asking** when you have enough to write a useful spec - don't over-question
+5. **Generate** a spec.md file using the template in [spec-template.md](spec-template.md)
 
 ## Guidelines
 
@@ -31,9 +32,9 @@ Help the user flesh out their idea into a complete specification.
 - Use your judgment - simple features need fewer questions
 - Explore the codebase if needed to understand existing patterns and constraints
 - The spec should be actionable for implementation planning
+- When the user requests changes to the spec, edit `spec.md` in place rather than regenerating it
 
 ## Output
 
-Save the final specification to `spec.md` in the current working directory (or project root if appropriate).
+Save the final specification to `spec.md` in the project root (git root).
 
-After creating the spec, suggest the user review it and then use plan mode to create an implementation plan.
