@@ -33,6 +33,7 @@
       "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(grep:*)",
+      "Bash(find:*)",
       "Bash(pkill:*)",
       "Bash(lsof:*)",
       "Bash(curl:*)",
