@@ -1,12 +1,7 @@
 {
-  "model": "opus",
   "attribution": {
     "commit": "",
     "pr": ""
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline.sh"
   },
   "permissions": {
     "allow": [
@@ -54,5 +49,11 @@
       "Bash(git remote:*)",
       "Bash(git fetch:*)"
     ]
-  }
+  },
+  "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline.sh"
+  },
+  "skipDangerousModePermissionPrompt": true
 }
