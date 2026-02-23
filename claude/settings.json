@@ -9,6 +9,7 @@
       "Fetch",
       "WebSearch",
       "Read",
+      "Search",
       "Write(//tmp/**)",
       "Edit(//tmp/**)",
       "Read(//tmp/**)",
@@ -38,6 +39,7 @@
       "Bash(bunx:*)",
       "Bash(dart:*)",
       "Bash(fvm:*)",
+      "Bash(code:*)",
       "Bash(git status:*)",
       "Bash(git log:*)",
       "Bash(git diff:*)",
@@ -47,8 +49,7 @@
       "Bash(git blame:*)",
       "Bash(git shortlog:*)",
       "Bash(git remote:*)",
-      "Bash(git fetch:*)",
-      "Bash(code:*)"
+      "Bash(git fetch:*)"
     ]
   },
   "model": "opus",
