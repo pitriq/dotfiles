@@ -11,25 +11,16 @@
     s = status -s
     
     # Show verbose output about tags, branches or remotes
-    tags = tag -l
-    branches = branch -a
-    remotes = remote -v
+    t = !"git --no-pager tag -l"
+
+    r = !"git --no-pager remote -v"
 
     # Show the diff between the latest commit and the current state
     d = !"git diff-index --quiet HEAD; git --no-pager diff --patch-with-stat"
 
-    # Get the date of the last commit in the current directory.
-    last-commit-date = "!sh -c 'if [ -z \"$GIT_PREFIX\" ]; then git --no-pager log -n 1 --pretty=format:\"📆 [%cd]\" --date=format-local:\"%Y-%m-%d %H:%M:%S\"; else git --no-pager log -n 1 --pretty=format:\"📆 [%cd]\" --date=format-local:\"%Y-%m-%d %H:%M:%S\" -- \"$GIT_PREFIX\"; fi' -"
-    
-    # List every commit in the current directory, after a certain date.
-    # USAGE: git files-changed-after YYYY-MM-DD
-    files-changed-after = "!sh -c 'input_date=\"$1\"; for file in $(git ls-files ${GIT_PREFIX:-.}); do last_commit_date=$(git log -1 --format=%cd --date=short -- \"$file\"); if [[ \"$last_commit_date\" > \"$input_date\" ]]; then echo \"📆 [$last_commit_date] $(echo \"$file\" | sed -e \"s|$GIT_PREFIX||\")\"; fi; done | sort -r' -"
-    
-    # List every commit in the current directory, after a certain date.
-    # USAGE: git commits-after YYYY-MM-DD
-    commits-after = "!sh -c 'input_date=\"$1\"; if [ -z \"$GIT_PREFIX\" ]; then git --no-pager log --since=\"$input_date\" --pretty=format:\"[%s] 🔗 %h 📆 [%cd]\" --date=short --name-only; else git --no-pager log --since=\"$input_date\" --pretty=format:\"[%s] 🔗 %h 📆 [%cd]\" --date=short --name-only -- \"$GIT_PREFIX\"; fi' -"
+    # List branches sorted by last commit date (newest first)
+    b = "!f() { now=$(date +%s); current=$(git symbolic-ref --short HEAD 2>/dev/null); git for-each-ref --sort=-committerdate refs/heads/ --format='%(committerdate:unix) %(committerdate:relative)@@@%(refname:short)' | while IFS= read -r line; do ts=${line%% *}; rest=${line#* }; date=${rest%%@@@*}; branch=${rest#*@@@}; age=$(( (now - ts) / 86400 )); if [ \"$age\" -lt 7 ]; then c=32; elif [ \"$age\" -lt 30 ]; then c=33; else c=31; fi; if [ \"$branch\" = \"$current\" ]; then printf \"\\033[%sm%s\\033[0m\\t* %s\\n\" \"$c\" \"$date\" \"$branch\"; else printf \"\\033[%sm%s\\033[0m\\t  %s\\n\" \"$c\" \"$date\" \"$branch\"; fi; done; }; f"
 
-    # * Branches
     # Switch to a branch, creating it if necessary
     go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
 
