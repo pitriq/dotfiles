@@ -47,7 +47,8 @@
       "Bash(git blame:*)",
       "Bash(git shortlog:*)",
       "Bash(git remote:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(code:*)"
     ]
   },
   "model": "opus",

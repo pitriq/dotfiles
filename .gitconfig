@@ -31,7 +31,7 @@
     remove-gone-branches = "!for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
 
 [core]
-    editor = code --wait
+    editor = nano
 
     # * URL shorthands
     [url "git@github.com:"]
