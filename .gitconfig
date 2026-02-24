@@ -19,7 +19,7 @@
     tb = !"git --no-pager rev-parse --abbrev-ref --symbolic-full-name @{u}"
 
     # Log the latest commits (default 15, pass a number to override)
-    l = "!f() { git --no-pager log -${1:-15} --pretty=format:'%C(yellow)%h %C(reset)%s %C(cyan)(%an)%C(reset)'; }; f"
+    l = "!f() { git --no-pager log -${1:-15} --pretty=format:'%C(green)%h %C(reset)%s %C(cyan)%an %C(brightblack)(%cr)%C(reset)'; }; f"
 
     # Show the diff between the latest commit and the current state
     d = !"git diff-index --quiet HEAD; git --no-pager diff --patch-with-stat"
