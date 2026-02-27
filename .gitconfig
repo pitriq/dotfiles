@@ -30,11 +30,8 @@
     # Switch to a branch, creating it if necessary
     go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
 
-    # List local branches that have been deleted from remote.
-    list-gone-branches = !git fetch -p && git branch -vv | grep ': gone]' | awk '{print $1}'
-
-    # Remove local branches that have been deleted from remote.
-    remove-gone-branches = "!for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
+    # Fetch, list, and remove local branches that have been deleted from remote.
+    cleanup = "!git fetch -p && for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
 
 [core]
     editor = nano
