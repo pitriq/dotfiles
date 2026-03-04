@@ -42,9 +42,9 @@ for ((i=0; i<filled; i++)); do bar="${bar}█"; done
 for ((i=0; i<empty; i++)); do bar="${bar}░"; done
 
 # Determine bar color based on percentage
-if [ "$pct" -le 40 ]; then
+if [ "$pct" -le 30 ]; then
     BAR_COLOR="$WHITE"
-elif [ "$pct" -le 75 ]; then
+elif [ "$pct" -le 60 ]; then
     BAR_COLOR="$YELLOW"
 else
     BAR_COLOR="$RED"
