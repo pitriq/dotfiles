@@ -30,3 +30,4 @@ mouse-hide-while-typing = false
 # macOS specific
 macos-option-as-alt = true
 keybind = shift+enter=text:\x1b\r
+keybind = ctrl+/=text:\x1f
