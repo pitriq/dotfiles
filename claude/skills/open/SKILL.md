@@ -1,6 +1,6 @@
 ---
 name: open
-description: Open files referenced in the conversation in Cursor using the "code" CLI alias.
+description: "Open files referenced in the conversation in Cursor using the \"code\" CLI alias.\nTRIGGER when: the user says \"open that\", \"show me in editor\", or wants to view discussed files in Cursor."
 ---
 
 # Open in Cursor

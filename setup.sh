@@ -113,6 +113,7 @@ lns claude/settings.json ~/.claude/settings.json
 lns claude/statusline.sh ~/.claude/statusline.sh
 lns claude/skills ~/.claude/skills
 lns claude/commands ~/.claude/commands
+lns claude/hooks ~/.claude/hooks
 
 # Set wallpaper
 echo "🖼️ Setting wallpaper..."

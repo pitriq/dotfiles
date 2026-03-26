@@ -1,6 +1,6 @@
 ---
 name: roast
-description: Critically analyze code changes to verify they're optimal, elegant, and correct. Challenges assumptions and proves the solution is the best approach for the problem.
+description: "Critically analyze code changes to verify they're optimal, elegant, and correct. Challenges assumptions and proves the solution is the best approach for the problem.\nTRIGGER when: the user asks to review, roast, critique, or sanity-check their code changes."
 ---
 
 # Roast My Changes

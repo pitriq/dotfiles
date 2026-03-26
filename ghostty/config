@@ -31,3 +31,6 @@ mouse-hide-while-typing = false
 macos-option-as-alt = true
 keybind = shift+enter=text:\x1b\r
 keybind = ctrl+/=text:\x1f
+macos-icon=custom-style
+macos-icon-screen-color=1E1E1E
+macos-icon-ghost-color=C58DFF

@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Create a comprehensive handoff document capturing the current task context, problem/feature details, progress, and next steps for seamless continuation by another agent or future session.
+description: "Create a comprehensive handoff document capturing the current task context, problem/feature details, progress, and next steps for seamless continuation by another agent or future session.\nTRIGGER when: the user asks to create a handoff, save context for later, or prepare work for another agent.\nDO NOT TRIGGER when: not explicitly requested — never auto-invoke at the end of a session."
 ---
 
 # Handoff Skill

@@ -13,6 +13,9 @@
       "Write(//tmp/**)",
       "Edit(//tmp/**)",
       "Read(//tmp/**)",
+      "Write(//private/tmp/**)",
+      "Edit(//private/tmp/**)",
+      "Read(//private/tmp/**)",
       "Bash(mkdir:*)",
       "Bash(touch:*)",
       "Bash(mv:*)",
@@ -50,14 +53,40 @@
       "Bash(git shortlog:*)",
       "Bash(git remote:*)",
       "Bash(git fetch:*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh",
+            "async": true
+          }
+        ]
+      }
     ]
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline.sh"
   },
-  "skipDangerousModePermissionPrompt": true,
   "effortLevel": "high",
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true
 }
