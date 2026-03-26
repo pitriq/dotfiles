@@ -27,8 +27,11 @@
     # List branches sorted by last commit date (newest first)
     b = "!f() { now=$(date +%s); current=$(git symbolic-ref --short HEAD 2>/dev/null); git for-each-ref --sort=-committerdate refs/heads/ --format='%(committerdate:unix) %(committerdate:relative)@@@%(refname:short)' | while IFS= read -r line; do ts=${line%% *}; rest=${line#* }; date=${rest%%@@@*}; branch=${rest#*@@@}; age=$(( (now - ts) / 86400 )); if [ \"$age\" -lt 7 ]; then c=32; elif [ \"$age\" -lt 30 ]; then c=33; else c=31; fi; if [ \"$branch\" = \"$current\" ]; then printf \"\\033[%sm%s\\033[0m\\t* %s\\n\" \"$c\" \"$date\" \"$branch\"; else printf \"\\033[%sm%s\\033[0m\\t  %s\\n\" \"$c\" \"$date\" \"$branch\"; fi; done; }; f"
 
-    # Switch to a branch, creating it if necessary
-    go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+    # List remote branches sorted by last commit date (newest first, default 15), shows local tracking name if any
+    br = "!f() { now=$(date +%s); lmap=$(git for-each-ref --format='%(upstream:short) %(refname:short)' refs/heads/); git for-each-ref --sort=-committerdate refs/remotes/origin/ --format='%(committerdate:unix) %(committerdate:relative)@@@%(refname:short)' | grep -v 'origin/HEAD' | head -n ${1:-15} | while IFS= read -r line; do ts=${line%% *}; rest=${line#* }; date=${rest%%@@@*}; branch=${rest#*@@@}; age=$(( (now - ts) / 86400 )); if [ \"$age\" -lt 7 ]; then c=32; elif [ \"$age\" -lt 30 ]; then c=33; else c=31; fi; local_name=$(echo \"$lmap\" | grep \"^$branch \" | awk '{print $2}'); if [ -n \"$local_name\" ]; then printf \"\\033[%sm%s\\033[0m\\t  %s \\033[35m(%s)\\033[0m\\n\" \"$c\" \"$date\" \"$branch\" \"$local_name\"; else printf \"\\033[%sm%s\\033[0m\\t  %s\\n\" \"$c\" \"$date\" \"$branch\"; fi; done; }; f"
+
+    # Switch to a branch, creating it if necessary. Tracks remote if given remote/branch-name.
+    go = "!f() { remote=$(echo \"$1\" | cut -d/ -f1); if git remote | grep -qx \"$remote\"; then local=${1#$remote/}; git checkout -b \"$local\" --track \"$1\" 2>/dev/null || git checkout \"$local\"; else git checkout -b \"$1\" 2>/dev/null || git checkout \"$1\"; fi; }; f"
 
     # Fetch, list, and remove local branches that have been deleted from remote.
     cleanup = "!git fetch -p && for branch in $(git branch -vv | grep ': gone]' | awk '{print $1}'); do git branch -D $branch; done"
