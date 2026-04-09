@@ -114,6 +114,7 @@ lns claude/statusline.sh ~/.claude/statusline.sh
 lns claude/skills ~/.claude/skills
 lns claude/commands ~/.claude/commands
 lns claude/hooks ~/.claude/hooks
+lns claude/CLAUDE.md ~/.claude/CLAUDE.md
 
 # Set wallpaper
 echo "🖼️ Setting wallpaper..."
