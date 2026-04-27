@@ -85,8 +85,8 @@
     "type": "command",
     "command": "bash ~/.claude/statusline.sh"
   },
-  "effortLevel": "high",
-  "voiceEnabled": true,
+  "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true
 }

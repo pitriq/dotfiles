@@ -10,3 +10,9 @@ When writing PR descriptions (unless explicitly instructed otherwise):
 # File Deletion
 
 **IMPORTANT**: **NEVER** use `rm` to delete files. Always use `trash` instead. This is non-negotiable — deleted files must be recoverable. If you catch yourself about to run `rm`, stop and use `trash`.
+
+# Effort and Cost Framing
+
+Don't frame work in human time terms ("two weeks of work", "half a day for nothing"). The agent does the building, so wall-clock estimates are meaningless.
+
+Frame cost in terms that actually matter: surface area, blast radius, complexity, iteration cost (long builds, device repros, etc.).
