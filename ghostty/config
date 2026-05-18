@@ -29,7 +29,7 @@ mouse-hide-while-typing = false
 
 # macOS specific
 macos-option-as-alt = true
-keybind = shift+enter=text:\x1b\r
+keybind = shift+enter=text:\n
 keybind = ctrl+/=text:\x1f
 macos-icon=custom-style
 macos-icon-screen-color=1E1E1E

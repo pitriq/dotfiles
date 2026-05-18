@@ -17,4 +17,5 @@ cd ~/dotfiles
 - Homebrew packages (via Brewfile)
 - Git configuration
 - Ghostty terminal config
+- Claude Code and Codex configuration
 - Custom aliases and functions

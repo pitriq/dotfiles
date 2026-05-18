@@ -44,10 +44,14 @@ export PATH="$PATH":"$HOME/fvm/default/bin"
 export PATH="$HOME/.shorebird/bin":"$PATH"
 
 # Android
-export PATH="$HOME/Library/Android/sdk/emulator":"$HOME/Library/Android/sdk/tools":"$HOME/Library/Android/sdk/platform-tools":"$PATH"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$ANDROID_HOME/emulator":"$ANDROID_HOME/tools":"$ANDROID_HOME/platform-tools":"$PATH"
 
 # Java
 export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
+# Rust
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall

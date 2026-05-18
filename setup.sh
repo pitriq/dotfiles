@@ -106,15 +106,30 @@ echo "👻 Setting up Ghostty..."
 mkdir -p ~/.config/ghostty
 lns ghostty/config ~/.config/ghostty/config
 
-# Set up Claude Code
+# Set up shared agent config (AGENTS.md, skills, hooks)
+echo "🤖 Setting up shared agent config..."
+mkdir -p ~/.claude ~/.codex
+lns agents/AGENTS.md ~/.claude/CLAUDE.md
+lns agents/AGENTS.md ~/.codex/AGENTS.md
+lns agents/hooks ~/.claude/hooks
+lns agents/hooks ~/.codex/hooks
+lns agents/skills ~/.claude/skills
+# Codex manages ~/.codex/skills/.system itself, so we link individual skills
+# rather than the whole directory.
+mkdir -p ~/.codex/skills
+for skill in agents/skills/*; do
+  [ -d "$skill" ] || continue
+  lns "$skill" ~/.codex/skills/"$(basename "$skill")"
+done
+
+# Set up Claude Code (Claude-specific config)
 echo "🤖 Setting up Claude Code..."
-mkdir -p ~/.claude
 lns claude/settings.json ~/.claude/settings.json
 lns claude/statusline.sh ~/.claude/statusline.sh
-lns claude/skills ~/.claude/skills
-lns claude/commands ~/.claude/commands
-lns claude/hooks ~/.claude/hooks
-lns claude/CLAUDE.md ~/.claude/CLAUDE.md
+
+# Set up Codex (Codex-specific config)
+echo "🤖 Setting up Codex..."
+lns codex/config.toml ~/.codex/config.toml
 
 # Set wallpaper
 echo "🖼️ Setting wallpaper..."

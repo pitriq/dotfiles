@@ -1,6 +1,6 @@
 #!/bin/bash
-# Claude Code hook: send desktop notification via Ghostty OSC 777
-# Receives JSON on stdin with session context
+# Agent hook: send desktop notification via Ghostty OSC 777
+# Receives JSON on stdin with session context. Used by Claude Code and Codex.
 
 INPUT=$(cat)
 
@@ -12,7 +12,7 @@ case "$HOOK_EVENT" in
   Stop)
     MESSAGE="Finished working"
     ;;
-  Notification)
+  Notification|PermissionRequest)
     MESSAGE="Waiting for permission"
     ;;
   *)

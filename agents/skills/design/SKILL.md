@@ -11,7 +11,7 @@ Help the user flesh out their idea into a complete specification.
 
 1. **Listen** to the user's problem or idea description
 2. **Explore** the codebase to understand existing patterns, conventions, and integration points relevant to the user's idea
-3. **Ask clarifying questions** using the `AskUserQuestion` tool when there are genuine ambiguities or gaps that would affect implementation:
+3. **Ask clarifying questions** using the agent's available user-input mechanism when there are genuine ambiguities or gaps that would affect implementation:
    - Unclear scope or boundaries
    - Missing edge cases that could cause issues
    - Integration points with existing systems
@@ -22,7 +22,7 @@ Help the user flesh out their idea into a complete specification.
 
 ## Guidelines
 
-- **Always use the `AskUserQuestion` tool** for clarifying questions - this provides a better UX with selectable options
+- Use a structured question tool for clarifying questions when one is available; otherwise ask concise plain-text questions
 - You can ask up to 4 questions at once, each with 2-4 options
 - Write concise option labels (1-5 words) with helpful descriptions
 - Use `multiSelect: true` when choices aren't mutually exclusive
@@ -37,4 +37,3 @@ Help the user flesh out their idea into a complete specification.
 ## Output
 
 Save the final specification to `spec.md` in the project root (git root).
-

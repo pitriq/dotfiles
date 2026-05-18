@@ -1,0 +1,41 @@
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+model_context_window = 1000000
+model_auto_compact_token_limit = 900000
+
+[features]
+codex_hooks = true
+
+[tui]
+status_line = [
+  "current-dir",
+  "git-branch",
+  "pull-request-number",
+  "model-with-reasoning",
+  "context-used",
+]
+terminal_title = ["spinner", "project"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[[hooks.Stop]]
+[[hooks.Stop.hooks]]
+type = "command"
+command = "bash ~/.codex/hooks/notify.sh"
+timeout = 10
+
+[[hooks.PermissionRequest]]
+[[hooks.PermissionRequest.hooks]]
+type = "command"
+command = "bash ~/.codex/hooks/notify.sh"
+timeout = 10
+
+[projects."/Users/pitriq/Developer/me/dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/pitriq/Developer/apps/trashlab/trashlab"]
+trust_level = "trusted"
+
+[projects."/Users/pitriq/Documents/lmd"]
+trust_level = "trusted"
