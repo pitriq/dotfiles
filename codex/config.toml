@@ -4,7 +4,7 @@ model_context_window = 1000000
 model_auto_compact_token_limit = 900000
 
 [features]
-codex_hooks = true
+hooks = true
 
 [tui]
 status_line = [
@@ -31,6 +31,14 @@ type = "command"
 command = "bash ~/.codex/hooks/notify.sh"
 timeout = 10
 
+[hooks.state]
+
+[hooks.state."/Users/pitriq/.codex/config.toml:stop:0:0"]
+trusted_hash = "sha256:fb98d4db621a04e0257cd05c5a6a65670b64f5d09ae0ddb754a4ec41a185f956"
+
+[hooks.state."/Users/pitriq/.codex/config.toml:permission_request:0:0"]
+trusted_hash = "sha256:88fb5708099f190c916c5868eedcf96b2c075f4cf8c383c6b4f3240556c86280"
+
 [projects."/Users/pitriq/Developer/me/dotfiles"]
 trust_level = "trusted"
 
@@ -38,4 +46,7 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/Users/pitriq/Documents/lmd"]
+trust_level = "trusted"
+
+[projects."/Users/pitriq/Downloads"]
 trust_level = "trusted"
