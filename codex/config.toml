@@ -6,6 +6,9 @@ model_auto_compact_token_limit = 900000
 [features]
 hooks = true
 
+[sandbox_workspace_write]
+network_access = true
+
 [tui]
 status_line = [
   "current-dir",
@@ -49,4 +52,7 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/Users/pitriq/Downloads"]
+trust_level = "trusted"
+
+[projects."/Users/pitriq/Downloads/Somos GSC"]
 trust_level = "trusted"
