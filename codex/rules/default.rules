@@ -1,0 +1,20 @@
+prefix_rule(pattern=["npx", "vitest", "run"], decision="allow")
+prefix_rule(pattern=["gh", "pr", "view"], decision="allow")
+prefix_rule(pattern=["git", "fetch"], decision="allow")
+prefix_rule(pattern=["git", "worktree"], decision="allow")
+
+prefix_rule(
+    pattern = ["git", "switch", "-c"],
+    decision = "allow",
+    justification = "Allow Codex to create local branches.",
+)
+
+prefix_rule(
+    pattern = ["git", "checkout", "-b"],
+    decision = "allow",
+    justification = "Allow Codex to create local branches.",
+)
+
+prefix_rule(pattern=["curl"], decision="allow")
+prefix_rule(pattern=["gh", "api"], decision="allow")
+prefix_rule(pattern=["ps"], decision="allow")

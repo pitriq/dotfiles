@@ -42,6 +42,15 @@ trusted_hash = "sha256:fb98d4db621a04e0257cd05c5a6a65670b64f5d09ae0ddb754a4ec41a
 [hooks.state."/Users/pitriq/.codex/config.toml:permission_request:0:0"]
 trusted_hash = "sha256:88fb5708099f190c916c5868eedcf96b2c075f4cf8c383c6b4f3240556c86280"
 
+[hooks.state."/Users/pitriq/Developer/apps/trashlab/trashlab/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:427c3f64dbbdc0191e4dcdf62343d73403c811be0298f11a8a95e5c47670e08a"
+
+[hooks.state."/Users/pitriq/Developer/apps/trashlab/trashlab/.codex/hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:50ca1440b9999305a92527504136ffa577cb5b047e4bc539e45b9756a4fcc79b"
+
+[hooks.state."/Users/pitriq/Developer/apps/trashlab/trashlab/.codex/hooks.json:stop:0:0"]
+trusted_hash = "sha256:8f9011fab48c663162e0db8f02bdda9d5336324f8332de45e684e79aea30123a"
+
 [projects."/Users/pitriq/Developer/me/dotfiles"]
 trust_level = "trusted"
 
@@ -55,4 +64,7 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/Users/pitriq/Downloads/Somos GSC"]
+trust_level = "trusted"
+
+[projects."/Users/pitriq/Developer/sandbox/panini-2026"]
 trust_level = "trusted"

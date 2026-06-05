@@ -130,6 +130,8 @@ lns claude/statusline.sh ~/.claude/statusline.sh
 # Set up Codex (Codex-specific config)
 echo "🤖 Setting up Codex..."
 lns codex/config.toml ~/.codex/config.toml
+mkdir -p ~/.codex/rules
+lns codex/rules/default.rules ~/.codex/rules/default.rules
 
 # Set wallpaper
 echo "🖼️ Setting wallpaper..."
