@@ -28,6 +28,9 @@ source "$HOME/.config/functions.sh"
 export PATH=/usr/local/bin:$PATH
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
+# node via fnm
+eval "$(fnm env --use-on-cd --shell zsh)"
+
 # local binaries
 export PATH="$HOME/.local/bin":"$PATH"
 

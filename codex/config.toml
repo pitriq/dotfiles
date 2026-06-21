@@ -17,15 +17,26 @@ status_line = [
   "model-with-reasoning",
   "context-used",
 ]
-terminal_title = ["spinner", "project"]
+terminal_title = ["spinner", "project", "git-branch"]
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
+
+[[hooks.UserPromptSubmit]]
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "bash ~/.codex/hooks/caffeinate.sh"
+timeout = 10
 
 [[hooks.Stop]]
 [[hooks.Stop.hooks]]
 type = "command"
 command = "bash ~/.codex/hooks/notify.sh"
+timeout = 10
+
+[[hooks.Stop.hooks]]
+type = "command"
+command = "bash ~/.codex/hooks/caffeinate.sh"
 timeout = 10
 
 [[hooks.PermissionRequest]]
@@ -51,20 +62,23 @@ trusted_hash = "sha256:50ca1440b9999305a92527504136ffa577cb5b047e4bc539e45b9756a
 [hooks.state."/Users/pitriq/Developer/apps/trashlab/trashlab/.codex/hooks.json:stop:0:0"]
 trusted_hash = "sha256:8f9011fab48c663162e0db8f02bdda9d5336324f8332de45e684e79aea30123a"
 
+[hooks.state."/Users/pitriq/.codex/config.toml:user_prompt_submit:0:0"]
+trusted_hash = "sha256:2274d01dd0cc3fc39a33bb65942e6a5ba9cafe227f903bf9464968f691e18c8a"
+
+[hooks.state."/Users/pitriq/.codex/config.toml:stop:0:1"]
+trusted_hash = "sha256:c562c26fb0a711facc7f41c04fa21c8d2d7cb19301bd4dadd65199d1961739aa"
+
 [projects."/Users/pitriq/Developer/me/dotfiles"]
 trust_level = "trusted"
 
 [projects."/Users/pitriq/Developer/apps/trashlab/trashlab"]
 trust_level = "trusted"
 
-[projects."/Users/pitriq/Documents/lmd"]
-trust_level = "trusted"
-
 [projects."/Users/pitriq/Downloads"]
 trust_level = "trusted"
 
-[projects."/Users/pitriq/Downloads/Somos GSC"]
+[projects."/Users/pitriq/Developer/sandbox/panini-2026"]
 trust_level = "trusted"
 
-[projects."/Users/pitriq/Developer/sandbox/panini-2026"]
+[projects."/Users/pitriq/Library/Application Support/com.conductor.app/bin"]
 trust_level = "trusted"

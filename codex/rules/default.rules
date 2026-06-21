@@ -18,3 +18,4 @@ prefix_rule(
 prefix_rule(pattern=["curl"], decision="allow")
 prefix_rule(pattern=["gh", "api"], decision="allow")
 prefix_rule(pattern=["ps"], decision="allow")
+prefix_rule(pattern=["xcrun", "simctl", "io", "booted", "screenshot"], decision="allow")

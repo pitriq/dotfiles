@@ -22,7 +22,7 @@ cursor-style-blink = false
 shell-integration-features = no-cursor
 
 # Scrolling
-scrollback-limit = 700000
+scrollback-limit = 50000000
 
 # Mouse
 mouse-hide-while-typing = false
