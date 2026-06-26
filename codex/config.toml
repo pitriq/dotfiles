@@ -1,7 +1,5 @@
 model = "gpt-5.5"
 model_reasoning_effort = "xhigh"
-model_context_window = 1000000
-model_auto_compact_token_limit = 900000
 
 [features]
 hooks = true
@@ -17,7 +15,7 @@ status_line = [
   "model-with-reasoning",
   "context-used",
 ]
-terminal_title = ["spinner", "project", "git-branch"]
+terminal_title = ["spinner", "project"]
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4

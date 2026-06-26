@@ -1,0 +1,17 @@
+"$schema" = "https://conductor.build/schemas/settings.schema.json"
+
+[git]
+branch_prefix = "francisco/"
+branch_prefix_type = "custom"
+delete_branch_on_archive = true
+
+[models]
+default = "gpt-5.5"
+visible_provider_models = "{\"claude\":[\"claude:fable-5\",\"claude:opus-4-8-1m\"],\"codex\":[\"codex:gpt-5.5\"],\"cursor\":[\"cursor:composer-2.5\"],\"opencode\":[\"opencode:opencode/big-pickle\"],\"pi\":[\"pi:anthropic/claude-sonnet-4-20250514\"]}"
+
+[models.claude_code]
+review_effort_level = "xhigh"
+
+[models.codex]
+default_thinking_level = "xhigh"
+review_thinking_level = "xhigh"
