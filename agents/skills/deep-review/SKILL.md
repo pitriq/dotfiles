@@ -1,9 +1,9 @@
 ---
-name: nuke
-description: "Deep adversarial multi-lens code review (simplicity, correctness, scalability, boundaries, idiomatic fit) with cross-lens validation of proposed fixes. Heavier than /roast.\nTRIGGER when: the user explicitly asks for /nuke, nuke, deep-roast, or a thorough multi-lens review.\nDO NOT TRIGGER when: the user asks for a quick review, roast, critique, or sanity-check — use /roast instead."
+name: deep-review
+description: "Deep adversarial multi-lens code review (simplicity, correctness, scalability, boundaries, idiomatic fit) with cross-lens validation of proposed fixes. Heavier than /roast.\nTRIGGER when: the user explicitly asks for /deep-review, deep review, deep-review, deep-roast, or a thorough multi-lens review.\nDO NOT TRIGGER when the user asks for a quick review, roast, critique, sanity-check, cleanup, or any file operation — use /roast for light review requests and normal file-operation handling for filesystem changes."
 ---
 
-# Nuke: Multi-Perspective Adversarial Review
+# Deep Review: Multi-Perspective Adversarial Review
 
 Run a deep code review by evaluating the diff through five adversarial perspectives sequentially, then synthesize a unified verdict — not a concatenation, an actual judgment.
 
@@ -13,20 +13,20 @@ Parse the user's request to determine what to analyze:
 
 | User says | Scope |
 |-----------|-------|
-| `/nuke` (no args) | `git diff main...HEAD` — all changes on current branch |
-| `/nuke last commit` | `git diff HEAD~1..HEAD` |
-| `/nuke <file>` | Changes to that specific file on current branch |
-| `/nuke staged` | `git diff --cached` |
-| `/nuke <commit-ref>` | `git show <commit-ref>` |
-| `/nuke spec` | The spec/plan document in the current directory (e.g. `spec.md`) |
-| `/nuke spec <path>` | The spec/plan at that path |
+| `/deep-review` (no args) | `git diff main...HEAD` — all changes on current branch |
+| `/deep-review last commit` | `git diff HEAD~1..HEAD` |
+| `/deep-review <file>` | Changes to that specific file on current branch |
+| `/deep-review staged` | `git diff --cached` |
+| `/deep-review <commit-ref>` | `git show <commit-ref>` |
+| `/deep-review spec` | The spec/plan document in the current directory (e.g. `spec.md`) |
+| `/deep-review spec <path>` | The spec/plan at that path |
 
 ## Process
 
 ### 1. Load context
 
 **For a code diff:**
-- Run `git status --short` first — if there's uncommitted or untracked work, flag it to the user (it won't be reviewed unless they switch scope to `/nuke staged` or `/nuke <file>`)
+- Run `git status --short` first — if there's uncommitted or untracked work, flag it to the user (it won't be reviewed unless they switch scope to `/deep-review staged` or `/deep-review <file>`)
 - Get the diff based on scope determined above
 - For each changed file, read the file in full — not just the hunks
 - For each changed file, skim 1–3 neighbors that show how this codebase does similar things (similar modules, sibling files, parallel implementations)
