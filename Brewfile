@@ -1,5 +1,6 @@
 tap "dart-lang/dart", trusted: true
 tap "homebrew/bundle"
+tap "jnsahaj/lumen"
 tap "leoafarias/fvm", trusted: true
 tap "mobile-dev-inc/tap", trusted: true
 tap "oven-sh/bun", trusted: true
@@ -91,6 +92,8 @@ brew "tree"
 brew "watchman"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# lumen is a command-line tool that can show pretty diff, generate commit messages with AI, summarise diffs / commits, and more without requiring an API key.
+brew "jnsahaj/lumen/lumen", trusted: true
 # Simple cli to manage Flutter SDK versions per project
 brew "leoafarias/fvm/fvm"
 # The easiest way to automate UI testing for your mobile app

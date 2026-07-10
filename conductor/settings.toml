@@ -1,4 +1,5 @@
 "$schema" = "https://conductor.build/schemas/settings.schema.json"
+claude_provider = "default"
 
 [git]
 branch_prefix = "francisco/"
@@ -6,8 +7,7 @@ branch_prefix_type = "custom"
 delete_branch_on_archive = false
 
 [models]
-default = "fable-5"
-visible_provider_models = "{\"claude\":[\"claude:fable-5\",\"claude:opus-4-8-1m\"],\"codex\":[\"codex:gpt-5.5\"],\"cursor\":[\"cursor:composer-2.5\"],\"opencode\":[\"opencode:opencode/big-pickle\"],\"pi\":[\"pi:anthropic/claude-sonnet-4-20250514\"]}"
+default = "claude:fable-5"
 
 [models.claude_code]
 default_effort_level = "xhigh"
