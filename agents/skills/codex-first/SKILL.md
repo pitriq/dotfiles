@@ -39,11 +39,12 @@ Prompt via temp file, never inline quoting:
 P=$(mktemp); cat >"$P" <<'EOF'
 <goal, repo + key paths, constraints ("don't touch X"), non-goals, proof expected, output shape>
 EOF
-command codex exec --yolo -C <repo> \
+command codex exec --sandbox workspace-write -C <repo> \
   -o /tmp/codex-last.md - <"$P" 2>/dev/null
 ```
 
-- `--yolo` is the house default; Codex may run commands/tests freely. Keep prompts scoped to the target repo.
+- `--sandbox workspace-write` is the house default: Codex runs commands/tests freely, writes confined to the repo + tmp, network enabled via config.toml. Keep prompts scoped to the target repo.
+- `--yolo` only when the sandbox blocks the task (writes outside the repo, sandbox-hostile tooling). Never launch it unprompted: unless the user already named approvals-off in their message, stop and ask them first — in auto mode the classifier denies `--yolo` without that naming, and outside auto mode it prompts anyway.
 - omit `model_reasoning_effort` so Codex uses the configured effort from its config.
 - `command codex` bypasses the interactive zsh wrapper; if not on PATH: `fnm exec --using default -- codex`
 - stderr suppressed (thinking noise bloats context); drop `2>/dev/null` only to debug a failing run
@@ -52,13 +53,15 @@ command codex exec --yolo -C <repo> \
 - parallel independent tasks OK: separate repos/dirs, separate `-o` files
 - outside a git repo add `--skip-git-repo-check`
 
-Follow-up fixes - cheaper than fresh runs, keeps context. `resume` has no `-C`/`--yolo`: run from the repo dir, spell the long flag:
+Follow-up fixes - cheaper than fresh runs, keeps context. `resume` has no `-C`/`--sandbox`: run from the repo dir, override via config:
 
 ```bash
 (cd <repo> && command codex exec resume --last \
-  --dangerously-bypass-approvals-and-sandbox \
+  -c sandbox_mode="workspace-write" \
   -o /tmp/codex-last.md - <"$P2" 2>/dev/null)
 ```
+
+If the run was escalated to `--yolo`, resume with `--dangerously-bypass-approvals-and-sandbox` instead (same authorization rule applies).
 
 ## Prompt contract
 
