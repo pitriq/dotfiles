@@ -108,24 +108,19 @@ lns ghostty/config ~/.config/ghostty/config
 
 # Set up shared agent config (AGENTS.md, skills, hooks)
 echo "🤖 Setting up shared agent config..."
-mkdir -p ~/.claude ~/.codex
+mkdir -p ~/.agents ~/.claude ~/.codex ~/.codex/skills
 lns agents/AGENTS.md ~/.claude/CLAUDE.md
 lns agents/AGENTS.md ~/.codex/AGENTS.md
 lns agents/hooks ~/.claude/hooks
 lns agents/hooks ~/.codex/hooks
 lns agents/skills ~/.claude/skills
-# Codex manages ~/.codex/skills/.system itself, so we link individual skills
-# rather than the whole directory.
-mkdir -p ~/.codex/skills
-for skill in agents/skills/*; do
-  [ -d "$skill" ] || continue
-  lns "$skill" ~/.codex/skills/"$(basename "$skill")"
-done
+lns agents/skills ~/.agents/skills
 
 # Set up Claude Code (Claude-specific config)
 echo "🤖 Setting up Claude Code..."
 lns claude/settings.json ~/.claude/settings.json
 lns claude/statusline.sh ~/.claude/statusline.sh
+lns agents/subagents ~/.claude/agents
 
 # Set up Codex (Codex-specific config)
 echo "🤖 Setting up Codex..."

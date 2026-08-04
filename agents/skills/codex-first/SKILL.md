@@ -33,35 +33,14 @@ Portfolio/multi-repo work: `$maintainer-orchestrator` instead.
 
 ## Invoke
 
-Prompt via temp file, never inline quoting:
+Always through the `codex-runner` subagent (Sonnet shell that owns the codex CLI mechanics) — never run `codex` via Bash in the main session, foreground or background:
 
-```bash
-P=$(mktemp); cat >"$P" <<'EOF'
-<goal, repo + key paths, constraints ("don't touch X"), non-goals, proof expected, output shape>
-EOF
-command codex exec --sandbox workspace-write -C <repo> \
-  -o /tmp/codex-last.md - <"$P" 2>/dev/null
-```
-
-- `--sandbox workspace-write` is the house default: Codex runs commands/tests freely, writes confined to the repo + tmp, network enabled via config.toml. Keep prompts scoped to the target repo.
-- `--yolo` only when the sandbox blocks the task (writes outside the repo, sandbox-hostile tooling). Never launch it unprompted: unless the user already named approvals-off in their message, stop and ask them first — in auto mode the classifier denies `--yolo` without that naming, and outside auto mode it prompts anyway.
-- omit `model_reasoning_effort` so Codex uses the configured effort from its config.
-- `command codex` bypasses the interactive zsh wrapper; if not on PATH: `fnm exec --using default -- codex`
-- stderr suppressed (thinking noise bloats context); drop `2>/dev/null` only to debug a failing run
-- read `-o` file for the result; don't parse the JSONL stream
-- long runs: Bash run_in_background, read `-o` file on exit; don't kill quiet runs <30 min
-- parallel independent tasks OK: separate repos/dirs, separate `-o` files
-- outside a git repo add `--skip-git-repo-check`
-
-Follow-up fixes - cheaper than fresh runs, keeps context. `resume` has no `-C`/`--sandbox`: run from the repo dir, override via config:
-
-```bash
-(cd <repo> && command codex exec resume --last \
-  -c sandbox_mode="workspace-write" \
-  -o /tmp/codex-last.md - <"$P2" 2>/dev/null)
-```
-
-If the run was escalated to `--yolo`, resume with `--dangerously-bypass-approvals-and-sandbox` instead (same authorization rule applies).
+- standalone: Agent tool, `subagent_type: codex-runner`, prompt = the full spec (contract below)
+- in a Workflow script: `agent(spec, {agentType: 'codex-runner'})`
+- model, tools, and codex invocation details live in the agent definition; don't pass a model override
+- parallel independent tasks: one runner each, separate repos/dirs
+- follow-up fixes: SendMessage to the same runner — it resumes the codex session, keeping context; cheaper than fresh spawns
+- `--yolo` (approvals off) only when the sandbox blocks the task (writes outside the repo, sandbox-hostile tooling), and only if the user named approvals-off in their message — otherwise stop and ask them first. Once authorized, state it explicitly in the runner prompt; the runner won't escalate on its own.
 
 ## Prompt contract
 
@@ -71,7 +50,7 @@ Codex starts with zero session context. Every prompt: goal, exact repo/paths, co
 
 - `git status -sb` + read the full diff; judge like a contributor PR
 - run focused tests yourself or demand proof output; Codex claims are advisory
-- iterate via resume; after 2 failed rounds, take over and do it directly
+- iterate by messaging the runner; after 2 failed rounds, take over and do it directly
 - normal closeout still applies: `$autoreview` before ship
 
 ## Economics

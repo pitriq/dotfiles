@@ -4,6 +4,35 @@
 # --------- 🐙 Functions ---------
 # --------------------------------
 
+function mov2mp4() {
+  if (( $# < 1 || $# > 2 )); then
+    echo "Usage: mov2mp4 INPUT.mov [CRF]"
+    return 1
+  fi
+
+  local input="$1"
+  local crf="${2:-24}"
+  local output="${input%.*}.mp4"
+
+  if [[ ! -f "$input" ]]; then
+    echo "File not found: $input"
+    return 1
+  fi
+
+  ffmpeg -hide_banner -n -i "$input" \
+    -map 0:v:0 -map '0:a?' \
+    -c:v libx264 \
+    -preset medium \
+    -crf "$crf" \
+    -pix_fmt yuv420p \
+    -fps_mode:v passthrough \
+    -enc_time_base:v -1 \
+    -c:a aac \
+    -b:a 160k \
+    -movflags +faststart \
+    "$output"
+}
+
 function work_simulator() {
   cd $(xcrun simctl get_app_container booted io.siteplan.sytex data)
 }
@@ -212,39 +241,25 @@ symbolicate() {
   echo "Output written to: $OUTPUT"
 }
 
-function _conductor_worktree_path_allowed() {
+function _work_cleanup_worktree_path_allowed() {
   local workspace_path="$1"
-  local roots="${CONDUCTOR_WORKTREE_ROOTS:-$HOME/conductor/workspaces:$HOME/Developer/apps/conductor/workspaces}"
+  local roots="${WORK_CLEANUP_WORKTREE_ROOTS:-$HOME/conductor/workspaces:$HOME/Developer/apps/conductor/workspaces:$HOME/.supacode/repos}"
   local root
 
+  workspace_path="${workspace_path:A}"
   for root in "${(@s/:/)roots}"; do
-    [[ -n "$root" && "$workspace_path" == "$root"/* ]] && return 0
+    [[ -n "$root" ]] || continue
+    while [[ "$root" != "/" && "$root" == */ ]]; do
+      root="${root%/}"
+    done
+    root="${root:A}"
+    [[ "$workspace_path" == "$root"/* ]] && return 0
   done
 
   return 1
 }
 
-function _conductor_worktree_git_state() {
-  local repo_root="$1"
-  local workspace_path="$2"
-
-  git -C "$repo_root" worktree list --porcelain | awk -v target="$workspace_path" '
-    $1 == "worktree" {
-      in_block = ($0 == "worktree " target)
-      if (in_block) found = 1
-    }
-    in_block && $1 == "locked" {
-      locked = 1
-    }
-    END {
-      if (!found) print "not-registered"
-      else if (locked) print "locked"
-      else print "ready"
-    }
-  '
-}
-
-function _conductor_worktree_symlinks() {
+function _work_cleanup_worktree_symlinks() {
   local workspace_path="$1"
   local parent_dir link target
 
@@ -259,189 +274,115 @@ function _conductor_worktree_symlinks() {
   return 0
 }
 
-function conductor_cleanup() {
-  local repo_filter=""
-  local db="${CONDUCTOR_DB_PATH:-$HOME/Library/Application Support/com.conductor.app/conductor.db}"
+function _work_cleanup_db_cleanup() {
   local sep=$'\x1f'
-  local sqlite_bin="${CONDUCTOR_SQLITE_BIN:-}"
-  local trash_bin="${CONDUCTOR_TRASH_BIN:-}"
+  local pg_container_override="${WORK_CLEANUP_PG_CONTAINER:-}"
+  local pg_user="${WORK_CLEANUP_PG_USER:-postgres}"
   local reset=$'\033[0m'
   local bold=$'\033[1m'
   local red=$'\033[31m'
   local green=$'\033[32m'
   local yellow=$'\033[33m'
   local cyan=$'\033[36m'
-  local magenta=$'\033[35m'
   local gray=$'\033[90m'
-  local arg
+  local repo_root repo_name
+  local docker_ps container_name container existing_rows existing_db db_suffix size
+  local workspace_line workspace_path workspace_name workspace_file db_name answer quoted_db key index
+  local -A running_containers queried_containers existing_by_container
+  local -A live_dbs seen_missing_containers seen_matches
+  local -a repo_roots=("$@")
+  local -a repo_names matched_containers matched_dbs matched_sizes
 
-  for arg in "$@"; do
-    case "$arg" in
-      --force)
-        echo "--force is no longer used; archived worktrees are included by default."
-        return 1
-        ;;
-      --apply)
-        echo "--apply is no longer used; conductor-cleanup prompts before moving files to Trash."
-        return 1
-        ;;
-      -h|--help)
-        echo "Usage: conductor-cleanup [repo-name-or-root]"
-        echo ""
-        echo "Shows archived Conductor worktrees, then prompts before moving worktree"
-        echo "directories and descriptive symlinks to Trash."
-        return 0
-        ;;
-      *)
-        repo_filter="$arg"
-        ;;
-    esac
+  command -v docker >/dev/null 2>&1 || return 0
+
+  for repo_root in "${repo_roots[@]}"; do
+    repo_name="$(basename "$repo_root")"
+    repo_names+=("$repo_name")
   done
 
-  if [[ -z "$sqlite_bin" ]]; then
-    if [[ -x /usr/bin/sqlite3 ]]; then
-      sqlite_bin="/usr/bin/sqlite3"
-    else
-      sqlite_bin="$(command -v sqlite3 2>/dev/null)"
-    fi
+  if docker_ps="$(docker ps --format '{{.Names}}' 2>/dev/null)"; then
+    while IFS= read -r container_name; do
+      [[ -n "$container_name" ]] && running_containers[$container_name]=1
+    done <<< "$docker_ps"
   fi
 
-  if [[ -z "$trash_bin" ]]; then
-    if [[ -x /usr/bin/trash ]]; then
-      trash_bin="/usr/bin/trash"
-    else
-      trash_bin="$(command -v trash 2>/dev/null)"
-    fi
-  fi
+  for (( index = 1; index <= ${#repo_roots[@]}; index++ )); do
+    repo_root="${repo_roots[$index]}"
+    repo_name="${repo_names[$index]}"
+    key="${repo_name}${sep}${repo_name}_${repo_name}"
+    live_dbs[$key]=1
 
-  if [[ -z "$sqlite_bin" ]]; then
-    echo "sqlite3 not found"
-    return 1
-  fi
+    while IFS= read -r workspace_line; do
+      [[ "$workspace_line" == "worktree "* ]] || continue
+      workspace_path="${workspace_line#worktree }"
+      [[ -e "$workspace_path" ]] || continue
 
-  if [[ -z "$trash_bin" ]]; then
-    echo "trash not found"
-    return 1
-  fi
-
-  if [[ ! -f "$db" ]]; then
-    echo "Conductor DB not found: $db"
-    return 1
-  fi
-
-  echo "${bold}Archived Conductor worktrees:${reset}"
-
-  local found=0
-  local removable=0
-  local skipped=0
-  local gone=0
-  local repo_root repo_name directory display_name branch workspace_path git_state status_line
-  local dirty rows symlink_paths symlink_path cleanup_rows answer
-
-  rows="$("$sqlite_bin" -noheader -separator "$sep" "$db" "
-    SELECT r.root_path,
-           r.name,
-           w.directory_name,
-           COALESCE(NULLIF(w.secondary_directory_name, ''), NULLIF(w.workspace_name, ''), ''),
-           COALESCE(w.branch, ''),
-           w.workspace_path
-    FROM workspaces w
-    JOIN repos r ON r.id = w.repository_id
-    WHERE w.state = 'archived'
-      AND w.workspace_path IS NOT NULL
-    ORDER BY r.name, w.directory_name;
-  ")" || {
-    echo "Could not query Conductor DB: $db"
-    return 1
-  }
-
-  while IFS="$sep" read -r repo_root repo_name directory display_name branch workspace_path; do
-    [[ -z "$workspace_path" ]] && continue
-
-    if [[ -n "$repo_filter" && "$repo_filter" != "$repo_name" && "$repo_filter" != "$repo_root" ]]; then
-      continue
-    fi
-
-    found=$((found + 1))
-
-    if [[ ! -d "$repo_root/.git" ]]; then
-      status_line="$repo_name/$directory"
-      [[ -n "$display_name" ]] && status_line="$status_line ${magenta}[$display_name]${reset}"
-      echo "${yellow}skip:${reset} $status_line has missing repo root: ${cyan}$repo_root${reset}"
-      skipped=$((skipped + 1))
-      continue
-    fi
-
-    if [[ ! -e "$workspace_path" ]]; then
-      status_line="$repo_name/$directory"
-      [[ -n "$display_name" ]] && status_line="$status_line ${magenta}[$display_name]${reset}"
-
-      git_state="$(_conductor_worktree_git_state "$repo_root" "$workspace_path")"
-      if [[ "$git_state" == "not-registered" ]]; then
-        echo "${gray}gone:${reset} $status_line is archived in Conductor, but the path and Git worktree entry are already gone"
+      workspace_file="$workspace_path/.workspace"
+      if [[ -f "$workspace_file" ]]; then
+        db_name="$(awk '/^[[:space:]]*dbName:[[:space:]]*/ { sub(/^[[:space:]]*dbName:[[:space:]]*/, ""); print; exit }' "$workspace_file" 2>/dev/null)"
+        db_name="${db_name%$'\r'}"
       else
-        echo "${yellow}prune:${reset} $status_line is archived but path is already gone"
+        workspace_name="$(basename "$workspace_path")"
+        workspace_name="${(L)workspace_name}"
+        workspace_name="${workspace_name//-/_}"
+        db_name="${repo_name}_${workspace_name}"
       fi
 
-      gone=$((gone + 1))
+      if [[ -n "$db_name" ]]; then
+        key="${repo_name}${sep}${db_name}"
+        live_dbs[$key]=1
+      fi
+    done < <(git -C "$repo_root" worktree list --porcelain 2>/dev/null)
+  done
+
+  for (( index = 1; index <= ${#repo_roots[@]}; index++ )); do
+    repo_name="${repo_names[$index]}"
+    container="${pg_container_override:-postgres_${repo_name}}"
+
+    if [[ -z "${running_containers[$container]:-}" ]]; then
+      if [[ -z "${seen_missing_containers[$container]:-}" ]]; then
+        echo "${gray}db: $container not running; skipped database cleanup${reset}"
+        seen_missing_containers[$container]=1
+      fi
       continue
     fi
 
-    if ! _conductor_worktree_path_allowed "$workspace_path"; then
-      status_line="$repo_name/$directory"
-      [[ -n "$display_name" ]] && status_line="$status_line ${magenta}[$display_name]${reset}"
-      echo "${yellow}skip:${reset} $status_line is outside allowed worktree roots: ${cyan}$workspace_path${reset}"
-      skipped=$((skipped + 1))
-      continue
-    fi
-
-    git_state="$(_conductor_worktree_git_state "$repo_root" "$workspace_path")"
-
-    if [[ "$git_state" == "not-registered" ]]; then
-      status_line="$repo_name/$directory"
-      [[ -n "$display_name" ]] && status_line="$status_line ${magenta}[$display_name]${reset}"
-      echo "${yellow}skip:${reset} $status_line is not registered as a Git worktree: ${cyan}$workspace_path${reset}"
-      skipped=$((skipped + 1))
-      continue
-    fi
-
-    dirty="$(git -C "$workspace_path" status --porcelain 2>/dev/null)"
-
-    status_line="${red}trash:${reset} $repo_name/$directory"
-    [[ -n "$display_name" ]] && status_line="$status_line ${magenta}[$display_name]${reset}"
-    [[ -n "$branch" ]] && status_line="$status_line ${cyan}($branch)${reset}"
-    [[ "$git_state" == "locked" ]] && status_line="$status_line ${yellow}[locked]${reset}"
-    [[ -n "$dirty" ]] && status_line="$status_line ${red}[dirty]${reset}"
-    echo "$status_line ${gray}->${reset} ${cyan}$workspace_path${reset}"
-
-    symlink_paths="$(_conductor_worktree_symlinks "$workspace_path")"
-    if [[ -n "$symlink_paths" ]]; then
-      while IFS= read -r symlink_path; do
-        [[ -z "$symlink_path" ]] && continue
-        echo "  ${magenta}symlink${reset} ${gray}->${reset} ${cyan}$symlink_path${reset}"
-      done <<< "$symlink_paths"
-    fi
-
-    cleanup_rows="${cleanup_rows}${repo_root}${sep}${workspace_path}${sep}${git_state}"$'\n'
-    removable=$((removable + 1))
-  done <<< "$rows"
-
-  if (( found == 0 )); then
-    if [[ -n "$repo_filter" ]]; then
-      echo "No archived Conductor worktrees found for: $repo_filter"
+    if [[ -z "${queried_containers[$container]:-}" ]]; then
+      queried_containers[$container]=1
+      existing_rows="$(docker exec "$container" psql -U "$pg_user" -Atc "SELECT datname||'|'||pg_size_pretty(pg_database_size(datname)) FROM pg_database WHERE NOT datistemplate;" 2>/dev/null)" || existing_rows=""
+      existing_by_container[$container]="$existing_rows"
     else
-      echo "No archived Conductor worktrees found."
+      existing_rows="${existing_by_container[$container]}"
     fi
-    return 0
-  fi
 
-  echo "${bold}Summary:${reset} ${red}$removable removable${reset}, ${gray}$gone already gone${reset}, ${yellow}$skipped skipped${reset}."
+    while IFS='|' read -r existing_db size; do
+      [[ -z "$existing_db" ]] && continue
+      [[ "$existing_db" == "${repo_name}_"* ]] || continue
 
-  if (( removable == 0 )); then
-    return 0
-  fi
+      db_suffix="${existing_db#"${repo_name}_"}"
+      [[ -z "$db_suffix" || "$db_suffix" == *[^A-Za-z0-9_]* ]] && continue
 
-  printf "%sMove %d archived worktree(s) to Trash? [Y/n]%s " "$yellow" "$removable" "$reset"
+      key="${repo_name}${sep}${existing_db}"
+      [[ -n "${live_dbs[$key]:-}" ]] && continue
+
+      key="${container}${sep}${existing_db}"
+      [[ -n "${seen_matches[$key]:-}" ]] && continue
+
+      seen_matches[$key]=1
+      matched_containers+=("$container")
+      matched_dbs+=("$existing_db")
+      matched_sizes+=("$size")
+    done <<< "$existing_rows"
+  done
+
+  (( ${#matched_dbs[@]} == 0 )) && return 0
+
+  echo "${bold}Orphaned workspace databases:${reset}"
+  for (( index = 1; index <= ${#matched_dbs[@]}; index++ )); do
+    echo "${red}drop:${reset} ${cyan}${matched_dbs[$index]}${reset} ${gray}(${matched_sizes[$index]})${reset}"
+  done
+
+  printf "%sDrop %d orphaned database(s)? [Y/n]%s " "$yellow" "${#matched_dbs[@]}" "$reset"
   if ! read -r answer; then
     echo ""
     echo "No confirmation received; cancelled."
@@ -461,24 +402,313 @@ function conductor_cleanup() {
       ;;
   esac
 
-  while IFS="$sep" read -r repo_root workspace_path git_state; do
-    [[ -z "$workspace_path" ]] && continue
+  for (( index = 1; index <= ${#matched_dbs[@]}; index++ )); do
+    db_name="${matched_dbs[$index]}"
+    container="${matched_containers[$index]}"
+    quoted_db="${db_name//\"/\"\"}"
 
-    if [[ "$git_state" == "locked" ]]; then
-      git -C "$repo_root" worktree unlock "$workspace_path"
+    if docker exec "$container" psql -U "$pg_user" -qc "DROP DATABASE \"$quoted_db\";"; then
+      echo "${green}dropped:${reset} ${cyan}$db_name${reset}"
+    else
+      echo "${red}failed:${reset} ${cyan}$db_name${reset}"
     fi
-
-    symlink_paths="$(_conductor_worktree_symlinks "$workspace_path")"
-    if [[ -n "$symlink_paths" ]]; then
-      while IFS= read -r symlink_path; do
-        [[ -z "$symlink_path" ]] && continue
-        "$trash_bin" "$symlink_path"
-      done <<< "$symlink_paths"
-    fi
-
-    "$trash_bin" "$workspace_path"
-    git -C "$repo_root" worktree prune --expire now
-  done <<< "$cleanup_rows"
+  done
 
   echo "${green}Done.${reset}"
+}
+
+function _work_cleanup_deriveddata_cleanup() {
+  local trash_bin="$1"
+  local deriveddata_root="${WORK_CLEANUP_DERIVEDDATA_PATH:-$HOME/Library/Developer/Xcode/DerivedData}"
+  local reset=$'\033[0m'
+  local bold=$'\033[1m'
+  local red=$'\033[31m'
+  local green=$'\033[32m'
+  local yellow=$'\033[33m'
+  local cyan=$'\033[36m'
+  local gray=$'\033[90m'
+  local entry info_plist workspace_path directory size answer index
+  local -a stale_dirs stale_names stale_sizes stale_paths
+
+  [[ -d "$deriveddata_root" ]] || return 0
+  [[ -x /usr/libexec/PlistBuddy ]] || return 0
+
+  while IFS= read -r entry; do
+    info_plist="$entry/info.plist"
+    [[ -f "$info_plist" ]] || continue
+
+    workspace_path="$(/usr/libexec/PlistBuddy -c 'Print :WorkspacePath' "$info_plist" 2>/dev/null)" || continue
+    [[ -n "$workspace_path" && ! -e "$workspace_path" ]] || continue
+
+    directory="$(basename "$entry")"
+    size="$(du -sh "$entry" 2>/dev/null)"
+    size="${size%%[[:space:]]*}"
+    stale_dirs+=("$entry")
+    stale_names+=("$directory")
+    stale_sizes+=("$size")
+    stale_paths+=("$workspace_path")
+  done < <(find "$deriveddata_root" -mindepth 1 -maxdepth 1 -type d -print 2>/dev/null)
+
+  (( ${#stale_dirs[@]} == 0 )) && return 0
+
+  echo "${bold}Stale DerivedData:${reset}"
+  for (( index = 1; index <= ${#stale_dirs[@]}; index++ )); do
+    echo "${red}trash:${reset} ${cyan}${stale_names[$index]}${reset} ${gray}(${stale_sizes[$index]}) ->${reset} ${cyan}${stale_paths[$index]}${reset}"
+  done
+
+  printf "%sMove %d stale DerivedData folder(s) to Trash? [Y/n]%s " "$yellow" "${#stale_dirs[@]}" "$reset"
+  if ! read -r answer; then
+    echo ""
+    echo "No confirmation received; cancelled."
+    return 1
+  fi
+
+  case "$answer" in
+    ""|[yY]|[yY][eE][sS])
+      ;;
+    [nN]|[nN][oO])
+      echo "${yellow}Cancelled.${reset}"
+      return 0
+      ;;
+    *)
+      echo "${yellow}Cancelled.${reset}"
+      return 1
+      ;;
+  esac
+
+  for (( index = 1; index <= ${#stale_dirs[@]}; index++ )); do
+    if "$trash_bin" "${stale_dirs[$index]}"; then
+      echo "${green}trashed:${reset} ${cyan}${stale_names[$index]}${reset}"
+    else
+      echo "${red}failed:${reset} ${cyan}${stale_names[$index]}${reset}"
+    fi
+  done
+
+  echo "${green}Done.${reset}"
+}
+
+function work-cleanup {
+  local repo_selector=""
+  local configured_repos="${WORK_CLEANUP_REPOS:-}"
+  local sep=$'\x1f'
+  local trash_bin="${WORK_CLEANUP_TRASH_BIN:-}"
+  local reset=$'\033[0m'
+  local bold=$'\033[1m'
+  local red=$'\033[31m'
+  local yellow=$'\033[33m'
+  local cyan=$'\033[36m'
+  local gray=$'\033[90m'
+  local common_dir candidate repo_root repo_name worktree_porcelain worktree_rows
+  local workspace_path workspace_name branch locked age dirty status_line answer
+  local symlink_paths symlink_path index worktree_index
+  local -A seen_roots
+  local -a configured_roots candidates repo_roots repo_names
+  local -a worktree_paths worktree_branches worktree_locks
+
+  if (( $# > 1 )); then
+    echo "Usage: work-cleanup [repo-root-or-name]"
+    return 1
+  fi
+
+  case "${1:-}" in
+    -h|--help)
+      echo "Usage: work-cleanup [repo-root-or-name]"
+      echo ""
+      echo "Stages:"
+      echo "  0. Discover repositories from Git and WORK_CLEANUP_REPOS."
+      echo "  1. Review linked worktrees and optionally move them to Trash."
+      echo "  2. Find and optionally drop orphaned workspace PostgreSQL databases."
+      echo "  3. Find and optionally trash stale Xcode DerivedData."
+      echo ""
+      echo "Worktree prompts default to No; database and DerivedData prompts default to Yes."
+      echo ""
+      echo "Environment:"
+      echo "  WORK_CLEANUP_REPOS              Colon-separated repository roots."
+      echo "  WORK_CLEANUP_WORKTREE_ROOTS     Colon-separated allowed worktree roots."
+      echo "  WORK_CLEANUP_TRASH_BIN          trash executable override."
+      echo "  WORK_CLEANUP_PG_CONTAINER       PostgreSQL container override."
+      echo "  WORK_CLEANUP_PG_USER            PostgreSQL user (default: postgres)."
+      echo "  WORK_CLEANUP_DERIVEDDATA_PATH   DerivedData root override."
+      return 0
+      ;;
+    -*)
+      echo "Unknown option: ${1:-}"
+      return 1
+      ;;
+    *)
+      repo_selector="${1:-}"
+      ;;
+  esac
+
+  configured_roots=("${(@s/:/)configured_repos}")
+
+  if [[ -n "$repo_selector" ]]; then
+    if [[ -d "$repo_selector" ]]; then
+      common_dir="$(git -C "$repo_selector" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
+      if [[ -n "$common_dir" ]]; then
+        common_dir="${common_dir:A}"
+        if [[ "$common_dir" == */.git ]]; then
+          candidates+=("${common_dir%/.git}")
+        else
+          candidates+=("$common_dir")
+        fi
+      fi
+    else
+      for candidate in "${configured_roots[@]}"; do
+        [[ -n "$candidate" ]] || continue
+        while [[ "$candidate" != "/" && "$candidate" == */ ]]; do
+          candidate="${candidate%/}"
+        done
+        [[ "$(basename "$candidate")" == "$repo_selector" ]] && candidates+=("$candidate")
+      done
+    fi
+  elif common_dir="$(git -C "$PWD" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
+    common_dir="${common_dir:A}"
+    if [[ "$common_dir" == */.git ]]; then
+      candidates+=("${common_dir%/.git}")
+    else
+      candidates+=("$common_dir")
+    fi
+  else
+    candidates=("${configured_roots[@]}")
+  fi
+
+  for candidate in "${candidates[@]}"; do
+    [[ -n "$candidate" ]] || continue
+    while [[ "$candidate" != "/" && "$candidate" == */ ]]; do
+      candidate="${candidate%/}"
+    done
+    candidate="${candidate:A}"
+    [[ -e "$candidate/.git" ]] || continue
+    [[ -n "${seen_roots[$candidate]:-}" ]] && continue
+
+    seen_roots[$candidate]=1
+    repo_roots+=("$candidate")
+    repo_names+=("$(basename "$candidate")")
+  done
+
+  if (( ${#repo_roots[@]} == 0 )); then
+    echo "${red}No Git repositories found.${reset}"
+    return 1
+  fi
+
+  if [[ -z "$trash_bin" ]]; then
+    if [[ -x /usr/bin/trash ]]; then
+      trash_bin="/usr/bin/trash"
+    else
+      trash_bin="$(command -v trash 2>/dev/null)"
+    fi
+  fi
+
+  if [[ -z "$trash_bin" ]]; then
+    echo "trash not found"
+    return 1
+  fi
+
+  for (( index = 1; index <= ${#repo_roots[@]}; index++ )); do
+    repo_root="${repo_roots[$index]}"
+    repo_name="${repo_names[$index]}"
+    echo "${bold}Worktrees for $repo_name:${reset}"
+
+    if ! worktree_porcelain="$(git -C "$repo_root" worktree list --porcelain 2>/dev/null)"; then
+      echo "${red}Could not list worktrees for: $repo_root${reset}"
+      return 1
+    fi
+
+    worktree_rows="$(print -r -- "$worktree_porcelain" | awk -v sep="$sep" '
+      function emit() {
+        if (path != "") print path sep branch sep locked
+      }
+      $1 == "worktree" {
+        emit()
+        path = substr($0, 10)
+        branch = "detached"
+        locked = 0
+        next
+      }
+      $1 == "branch" {
+        branch = substr($0, 8)
+        sub(/^refs\/heads\//, "", branch)
+        next
+      }
+      $1 == "locked" {
+        locked = 1
+      }
+      END {
+        emit()
+      }
+    ' | LC_ALL=C sort)"
+
+    worktree_paths=()
+    worktree_branches=()
+    worktree_locks=()
+    while IFS="$sep" read -r workspace_path branch locked; do
+      [[ -n "$workspace_path" ]] || continue
+      worktree_paths+=("$workspace_path")
+      worktree_branches+=("$branch")
+      worktree_locks+=("$locked")
+    done <<< "$worktree_rows"
+
+    for (( worktree_index = 1; worktree_index <= ${#worktree_paths[@]}; worktree_index++ )); do
+      workspace_path="${worktree_paths[$worktree_index]}"
+      branch="${worktree_branches[$worktree_index]}"
+      locked="${worktree_locks[$worktree_index]}"
+      [[ -n "$workspace_path" && "$workspace_path" != "$repo_root" ]] || continue
+
+      if [[ ! -e "$workspace_path" ]]; then
+        if (( locked )); then
+          git -C "$repo_root" worktree unlock "$workspace_path" >/dev/null 2>&1
+        fi
+        git -C "$repo_root" worktree prune --expire now >/dev/null 2>&1
+        echo "${gray}prune: $workspace_path registered but missing; pruned${reset}"
+        continue
+      fi
+
+      if ! _work_cleanup_worktree_path_allowed "$workspace_path"; then
+        echo "${yellow}skip: $workspace_path is outside allowed worktree roots${reset}"
+        continue
+      fi
+
+      workspace_name="$(basename "$workspace_path")"
+      age="$(git -C "$workspace_path" log -1 --format=%cr 2>/dev/null)"
+      dirty="$(git -C "$workspace_path" status --porcelain 2>/dev/null)"
+      status_line="${cyan}${workspace_name}${reset} $branch ${gray}${age:-no commits}${reset}"
+      [[ -n "$dirty" ]] && status_line="$status_line ${red}[dirty]${reset}"
+      (( locked )) && status_line="$status_line ${yellow}[locked]${reset}"
+      echo "$status_line ${gray}-> $workspace_path${reset}"
+
+      printf "%sTrash worktree %s? [y/N]%s " "$yellow" "$workspace_name" "$reset"
+      if ! read -r answer; then
+        echo ""
+        echo "No confirmation received; cancelled."
+        return 1
+      fi
+
+      case "${(L)answer}" in
+        y|yes)
+          ;;
+        *)
+          continue
+          ;;
+      esac
+
+      if (( locked )); then
+        git -C "$repo_root" worktree unlock "$workspace_path"
+      fi
+
+      symlink_paths="$(_work_cleanup_worktree_symlinks "$workspace_path")"
+      if [[ -n "$symlink_paths" ]]; then
+        while IFS= read -r symlink_path; do
+          [[ -n "$symlink_path" ]] && "$trash_bin" "$symlink_path"
+        done <<< "$symlink_paths"
+      fi
+
+      "$trash_bin" "$workspace_path"
+      git -C "$repo_root" worktree prune --expire now
+      echo "${gray}branch $branch kept${reset}"
+    done
+  done
+
+  _work_cleanup_db_cleanup "${repo_roots[@]}" || return 1
+  _work_cleanup_deriveddata_cleanup "$trash_bin"
 }

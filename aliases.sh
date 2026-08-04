@@ -9,7 +9,6 @@ export WORK_HOME="$HOME/Developer/apps/trashlab"
 
 alias ytdl="yt-dlp -x --audio-format mp3"
 alias flac2mp3='flac2mp3_func() { ffmpeg -i "$1" -b:a 320k "${1%.*}.mp3"; }; flac2mp3_func'
-alias mov2mp4='mov2mp4_func() { ffmpeg -i "$1" -c:v libx264 -c:a aac "${1%.*}.mp4"; }; mov2mp4_func'
 alias dev="cd $HOME/Developer"
 alias dots='cd "$DOTS_HOME"'
 alias work='cd "$WORK_HOME"'
@@ -21,4 +20,3 @@ alias code="cursor"
 alias codex="codex --sandbox workspace-write"
 alias ccd="claude"
 alias ccw="claude --worktree"
-alias conductor-cleanup="conductor_cleanup"

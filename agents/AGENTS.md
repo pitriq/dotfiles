@@ -10,6 +10,6 @@ Work style: compact, direct, no AI slop.
 
 ## Routing
 
-- Claude Code sessions: implementation/refactor/test/fix work defaults to `$codex-first`; design/API design/tiny edits stay direct. Codex sessions ignore.
+- Claude Code sessions: implementation/refactor/test/fix work defaults to `$codex-first`, invoked via the `codex-runner` subagent; design/API design/tiny edits stay direct. Codex sessions ignore.
 - Browser debugging: use `$agent-browser` when opening, inspecting, automating, or debugging a browser.
 - Apple Simulator/mobile app: use `$serve-sim`.
