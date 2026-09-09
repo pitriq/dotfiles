@@ -1,4 +1,4 @@
-model = "gpt-5.6-sol"
+model = "gpt-6-astra"
 model_reasoning_effort = "xhigh"
 
 [features]
@@ -19,6 +19,7 @@ terminal_title = ["spinner", "project"]
 
 [tui.model_availability_nux]
 "gpt-5.6-sol" = 4
+gpt-6-astra = 4
 
 [[hooks.UserPromptSubmit]]
 [[hooks.UserPromptSubmit.hooks]]

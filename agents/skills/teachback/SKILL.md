@@ -1,11 +1,15 @@
 ---
 name: teachback
-description: "Guide the user to deeply understand the current session, current code changes, or a named area of the codebase through incremental explanation, a running checklist, user restatement, and quizzes.\nTRIGGER when: the user invokes /teachback, asks to understand the current session/current changes, asks for a guided walkthrough, or asks to understand a specific module, feature, diff, bug, or implementation.\nDefault with no explicit target: teach the current session and current branch changes."
+description: "Run an interactive teachback session using incremental explanation, a running checklist, user restatement, and quizzes. TRIGGER ONLY when the user explicitly invokes `/teachback` or says `teachback`, or explicitly asks to be quizzed or tested on their understanding. Do not trigger for ordinary requests to explain, summarize, review, walk through, or help understand something. Default with no explicit target: teach or quiz the current session and current branch changes."
 ---
 
 # Teachback Skill
 
 Help the user understand the work, not just receive a summary. Optimize for durable understanding of the problem, solution, rationale, edge cases, and impact.
+
+## Activation Guard
+
+Use this workflow only for an explicit teachback or quiz request. Handle ordinary explanations, summaries, reviews, walkthroughs, and requests for help understanding something without this skill.
 
 ## Scope
 
@@ -13,11 +17,12 @@ Determine the teaching target from the request:
 
 | User says | Scope |
 |-----------|-------|
-| `/teachback` | Current conversation plus current branch changes, usually `git diff main...HEAD` when in a repo |
+| `/teachback` or `teachback` | Current conversation plus current branch changes, usually `git diff main...HEAD` when in a repo |
 | `/teachback current changes` | Current branch changes |
 | `/teachback last commit` | `git show HEAD` |
 | `/teachback <file/module/feature>` | That code area and its relevant surrounding context |
 | `/teachback <bug/spec/PR>` | That artifact plus affected implementation context |
+| `quiz me` or `test my understanding` | The explicitly named target, or the current session and branch changes when omitted |
 
 If the target is unclear, make a reasonable narrow assumption and say what you chose. Ask a question only when the ambiguity would materially change what must be taught.
 
