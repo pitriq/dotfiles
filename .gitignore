@@ -1,2 +1,5 @@
 .DS_Store
 .claude
+/agents/skills/synced/
+/agents/skills/supacode-cli/
+/agents/skills/supacode-deeplinks/
