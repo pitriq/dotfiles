@@ -1,9 +1,9 @@
 ---
-name: deep-review
-description: "Deep adversarial multi-lens code review (simplicity, correctness, scalability, boundaries, idiomatic fit) with cross-lens validation of proposed fixes. Heavier than /roast.\nTRIGGER when: the user explicitly asks for /deep-review, deep review, deep-review, deep-roast, or a thorough multi-lens review.\nDO NOT TRIGGER when the user asks for a quick review, roast, critique, sanity-check, cleanup, or any file operation — use /roast for light review requests and normal file-operation handling for filesystem changes."
+name: vet
+description: "Adversarial multi-lens review of a diff or spec (simplicity, correctness, scalability, boundaries, idiomatic fit) with cross-lens validation of the fixes, ending in a SHIP, REVISE, or REDESIGN verdict. `/council` runs it on three models.\nTRIGGER when the user invokes /vet, asks to vet a change, or asks for a deep or thorough review. Do not trigger for cleanup or file operations."
 ---
 
-# Deep Review: Multi-Perspective Adversarial Review
+# Vet
 
 Run a deep code review by evaluating the diff through five adversarial perspectives sequentially, then synthesize a unified verdict — not a concatenation, an actual judgment.
 
@@ -13,20 +13,23 @@ Parse the user's request to determine what to analyze:
 
 | User says | Scope |
 |-----------|-------|
-| `/deep-review` (no args) | `git diff main...HEAD` — all changes on current branch |
-| `/deep-review last commit` | `git diff HEAD~1..HEAD` |
-| `/deep-review <file>` | Changes to that specific file on current branch |
-| `/deep-review staged` | `git diff --cached` |
-| `/deep-review <commit-ref>` | `git show <commit-ref>` |
-| `/deep-review spec` | The spec/plan document in the current directory (e.g. `spec.md`) |
-| `/deep-review spec <path>` | The spec/plan at that path |
+| `/vet` (no args) | `git diff <default branch>...HEAD` — all changes on current branch. The default branch is `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main` |
+| `/vet last commit` | `git diff HEAD~1..HEAD` |
+| `/vet <file>` | Changes to that specific file on current branch |
+| `/vet staged` | `git diff --cached` |
+| `/vet <commit-ref>` | `git show <commit-ref>` |
+| `/vet spec` | The spec/plan document in the current directory (e.g. `spec.md`) |
+| `/vet spec <path>` | The spec/plan at that path |
+
+A scope the caller passes, such as `/council`'s, wins over this table.
+
 
 ## Process
 
 ### 1. Load context
 
 **For a code diff:**
-- Run `git status --short` first — if there's uncommitted or untracked work, flag it to the user (it won't be reviewed unless they switch scope to `/deep-review staged` or `/deep-review <file>`)
+- Run `git status --short` first — if there's uncommitted or untracked work, flag it to the user (it won't be reviewed unless they switch scope to `/vet staged` or `/vet <file>`)
 - Get the diff based on scope determined above
 - For each changed file, read the file in full — not just the hunks
 - For each changed file, skim 1–3 neighbors that show how this codebase does similar things (similar modules, sibling files, parallel implementations)
@@ -54,21 +57,11 @@ Record each finding as:
 |---|---|
 | Simplicity / Code-judo | what scope/phase/feature can be cut? |
 | Correctness / Gaps | what scenarios does this design not cover? what assumptions are hidden? |
-| Scalability / Blast radius | what load model does this assume? when does it break? |
+| Scalability | what load model does this assume? when does it break? |
 | Boundaries / Canonical layers | ownership/team boundaries; reinventing an existing system |
 | Idiomatic fit | does this match how the org/codebase usually solves this kind of problem? |
 
 Severity rubrics and verdict labels still apply. For spec mode: **SHIP** = ready to implement; **REVISE** = address before implementing; **REDESIGN** = fundamental rework.
-
-**Lens boundaries** — to avoid duplicate findings across perspectives:
-
-| Concern | Owned by |
-|---|---|
-| Edge cases, error handling, race conditions | Correctness |
-| Load behavior, capacity failures | Scalability |
-| Code placement, module ownership, duplicated helpers | Boundaries |
-| Naming, style, convention drift | Idiomatic |
-| Deletion / structural-simplification opportunities | Simplicity |
 
 If you spot something during one perspective that belongs to another, note it briefly and defer the depth analysis to the owning lens.
 
@@ -106,7 +99,7 @@ If you spot something during one perspective that belongs to another, note it br
 
 ---
 
-#### Perspective 3 — Scalability / Blast radius
+#### Perspective 3 — Scalability
 
 **Voice:** A staff engineer who's been personally paged for every kind of capacity failure.
 
@@ -177,16 +170,6 @@ After validation, state the verdict:
 - **SHIP** — no P0/P1 findings and no unresolved Tensions; minor concerns documented but not blocking
 - **REVISE** — has P1s or Tensions that should be addressed before merging
 - **REDESIGN** — has P0s, or structural concerns deep enough that incremental fixes won't help
-
-### 5. Iteration
-
-If the user pushes back on a finding:
-- Hear the defense
-- Re-evaluate *only the relevant perspective(s)* — don't re-run all five
-- Either accept the defense and downgrade/remove the finding, or hold the line with a specific rebuttal
-- Update the verdict if affected
-
-Cap at 2 rounds. Remaining disagreement after that is a judgment call, not a review issue.
 
 ## Output
 

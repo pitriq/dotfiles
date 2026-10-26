@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teachback</title>
+<style>
+/* T3 Code's theme variables win over these. The fallbacks only apply when the page opens in a browser. */
+:where(:root) {
+  color-scheme: light dark;
+  --foreground: CanvasText;
+  --muted-foreground: GrayText;
+  --border: color-mix(in srgb, CanvasText 16%, transparent);
+  --ring: color-mix(in srgb, CanvasText 40%, transparent);
+  --primary: #3b82f6;
+  --success: #16a34a;
+  --destructive: #dc2626;
+  --code-background: color-mix(in srgb, CanvasText 6%, transparent);
+  --radius: 8px;
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+body { margin: 0; font-family: var(--font-sans); font-size: 14px; line-height: 1.55; }
+@media (min-width: 900px) { .tb { max-width: 760px; margin: 32px auto; } }
+.tb { display: flex; flex-direction: column; gap: 28px; }
+h1 { font-size: 18px; margin: 0 0 4px; }
+.lede, .muted { color: var(--muted-foreground); }
+.lede { margin: 0; }
+.layer { display: flex; flex-direction: column; gap: 8px; }
+.layer h2 { font-size: 15px; margin: 0; display: flex; gap: 8px; align-items: baseline; }
+.layer h2 .n { font: 12px var(--font-mono); color: var(--muted-foreground); }
+.layer p { margin: 0; }
+details { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; }
+details summary { cursor: pointer; color: var(--muted-foreground); }
+details[open] summary { margin-bottom: 8px; }
+details > * + * { margin-top: 8px; }
+code { font-family: var(--font-mono); font-size: 0.92em; }
+pre { background: var(--code-background); border-radius: var(--radius); padding: 16px; margin: 0; overflow-x: auto; font: 12px/1.5 var(--font-mono); }
+.ref { font: 12px var(--font-mono); color: var(--muted-foreground); }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.flow .step { border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px; font-size: 13px; }
+.flow .step.new { border-color: var(--primary); }
+.flow .step.gone { color: var(--muted-foreground); text-decoration: line-through; }
+.flow .arrow { color: var(--muted-foreground); }
+.quiz { display: flex; flex-direction: column; gap: 12px; }
+.q { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); }
+.prompt { font-weight: 500; }
+.opt { text-align: left; background: transparent; color: inherit; font: inherit; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; cursor: pointer; }
+.opt:hover:not(:disabled) { border-color: var(--ring); }
+.opt:disabled { cursor: default; }
+.opt.right { border-color: var(--success); background: color-mix(in srgb, var(--success) 12%, transparent); }
+.opt.wrong { border-color: var(--destructive); background: color-mix(in srgb, var(--destructive) 12%, transparent); }
+.why { display: none; font-size: 13px; color: var(--muted-foreground); margin-top: 4px; }
+.answered .why { display: block; }
+textarea { box-sizing: border-box; width: 100%; min-height: 72px; font: inherit; color: inherit; background: transparent; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 12px; resize: vertical; }
+.reveal { align-self: flex-start; background: transparent; color: inherit; font: inherit; border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 12px; cursor: pointer; }
+.model { display: none; border-left: 2px solid var(--primary); padding-left: 12px; }
+.shown .model { display: block; }
+.score { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: none; }
+.score.done { display: block; }
+.score p { margin: 0; }
+</style>
+</head>
+<body>
+<div class="tb">
+
+  <!-- Fill everything from here to the quiz. Keep the four layers and their order. -->
+  <header>
+    <h1>TITLE: the change in a few words</h1>
+    <p class="lede">One sentence: what changed for the user, and the scope this page covers (branch, commit, or PR).</p>
+  </header>
+
+  <section class="layer">
+    <h2><span class="n">1</span>Problem</h2>
+    <p>Two or three sentences: what was wrong and why it existed.</p>
+    <details>
+      <summary>Go deeper</summary>
+      <p>The why chain: the cause behind the symptom, and the cause behind that.</p>
+      <div class="flow"><span class="step">Step</span><span class="arrow">→</span><span class="step">Step that fails</span></div>
+    </details>
+  </section>
+
+  <section class="layer">
+    <h2><span class="n">2</span>Solution</h2>
+    <p>Two or three sentences: what changed and why this approach.</p>
+    <details>
+      <summary>Go deeper</summary>
+      <p>Why it works, and the alternatives that were rejected and why.</p>
+      <div class="ref">path/to/file.ts:42</div>
+      <pre><code>// a short excerpt that carries the change</code></pre>
+    </details>
+  </section>
+
+  <section class="layer">
+    <h2><span class="n">3</span>Edge cases</h2>
+    <p>The boundaries, failure modes, and surprising cases, in two or three sentences.</p>
+    <details>
+      <summary>Go deeper</summary>
+      <p>Each case: what happens, and why the change handles it (or doesn't).</p>
+    </details>
+  </section>
+
+  <section class="layer">
+    <h2><span class="n">4</span>Impact</h2>
+    <p>Who and what it affects: users, other apps, data, operations, future work.</p>
+    <details>
+      <summary>Go deeper</summary>
+      <p>Systems touched, rollout or migration concerns, and what to watch after shipping.</p>
+    </details>
+  </section>
+
+  <section class="layer">
+    <h2><span class="n">?</span>Check yourself</h2>
+    <p class="muted">Pick an answer to see why each option is right or wrong. Options are shuffled.</p>
+    <div class="quiz" id="quiz"></div>
+    <div class="score" id="score"></div>
+  </section>
+</div>
+
+<!-- Fill the quiz data. "section" is one of: Problem, Solution, Edge cases, Impact. "answer" is the index of the correct option.
+     Backticks in any text render as code. -->
+<script type="application/json" id="quiz-data">
+{
+  "questions": [
+    {
+      "section": "Problem",
+      "q": "A question about why something happens or what would happen if a condition changed?",
+      "options": [
+        { "text": "The correct answer", "why": "Why this is right." },
+        { "text": "A plausible mistake", "why": "Why this is wrong." },
+        { "text": "Another plausible mistake", "why": "Why this is wrong." }
+      ],
+      "answer": 0
+    }
+  ],
+  "open": [
+    { "q": "Explain in your own words why ...?", "answer": "The answer the user should compare theirs against." }
+  ]
+}
+</script>
+
+<script>
+(() => {
+  const data = JSON.parse(document.getElementById('quiz-data').textContent);
+  const quiz = document.getElementById('quiz');
+  const score = document.getElementById('score');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const md = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const results = new Array(data.questions.length).fill(null);
+
+  const renderScore = () => {
+    if (results.some(r => r === null)) return;
+    const bySection = new Map();
+    for (const r of results) {
+      const s = bySection.get(r.section) || { ok: 0, total: 0 };
+      s.total += 1; if (r.ok) s.ok += 1;
+      bySection.set(r.section, s);
+    }
+    const ok = results.filter(r => r.ok).length;
+    const parts = [...bySection].map(([name, s]) => `${esc(name)} ${s.ok}/${s.total}`).join(' · ');
+    const missed = [...bySection].filter(([, s]) => s.ok < s.total).map(([name]) => esc(name));
+    score.innerHTML = `<p><strong>${ok} of ${results.length}</strong> · ${parts}</p>` +
+      (missed.length ? `<p class="muted">Ask about: ${missed.join(', ')}</p>` : `<p class="muted">All sections correct.</p>`);
+    score.classList.add('done');
+  };
+
+  data.questions.forEach((q, qi) => {
+    const el = document.createElement('div');
+    el.className = 'q';
+    el.innerHTML = `<div class="tag">${esc(q.section)}</div><div class="prompt">${qi + 1}. ${md(q.q)}</div>`;
+    const options = shuffle(q.options.map((o, i) => ({ ...o, correct: i === q.answer })));
+    for (const o of options) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.innerHTML = `<div>${md(o.text)}</div><div class="why">${md(o.why)}</div>`;
+      b.addEventListener('click', () => {
+        if (el.classList.contains('answered')) return;
+        el.classList.add('answered');
+        el.querySelectorAll('.opt').forEach((x, i) => { x.disabled = true; if (options[i].correct) x.classList.add('right'); });
+        if (!o.correct) b.classList.add('wrong');
+        results[qi] = { section: q.section, ok: o.correct };
+        renderScore();
+      });
+      el.append(b);
+    }
+    quiz.append(el);
+  });
+
+  (data.open || []).forEach(o => {
+    const el = document.createElement('div');
+    el.className = 'q';
+    el.innerHTML = `<div class="tag">In your own words</div><div class="prompt">${md(o.q)}</div>` +
+      `<textarea placeholder="Write your answer before you reveal it"></textarea>` +
+      `<button type="button" class="reveal">Show answer</button><div class="model">${md(o.answer)}</div>`;
+    el.querySelector('.reveal').addEventListener('click', e => { el.classList.add('shown'); e.target.remove(); });
+    quiz.append(el);
+  });
+})();
+</script>
+</body>
+</html>

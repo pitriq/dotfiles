@@ -5,13 +5,13 @@ description: Remove AI-generated code slop from current branch
 
 # Remove AI Code Slop
 
-Your task is to review the diff against main and remove all AI-generated "slop" introduced in this branch.
+Your task is to review the branch's diff and remove all AI-generated "slop" introduced in it. Use the scope the caller gives. Otherwise diff against the default branch, which is `git symbolic-ref --short refs/remotes/origin/HEAD`, else `main`.
 
 ## Process
 
-1. Get the diff against main:
+1. Get the diff:
    ```
-   git diff main...HEAD
+   git diff <default branch>...HEAD
    ```
 
 2. For each modified file, read the full file to understand its existing style and patterns
@@ -33,6 +33,10 @@ Your task is to review the diff against main and remove all AI-generated "slop" 
    - Casts to `any`, `unknown`, or language-equivalent dynamic types to bypass type errors
    - Type assertions that shouldn't be necessary
    - `@ts-ignore`, `# type: ignore`, or similar suppression comments
+
+   **Leftovers from the change:**
+   - Code the change made dead, and old paths it replaced but kept
+   - Wrappers and helpers with a single caller that add nothing over inlining
 
    **Style inconsistencies:**
    - Naming conventions that differ from the rest of the file

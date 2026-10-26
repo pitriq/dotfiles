@@ -1,101 +1,44 @@
 ---
 name: teachback
-description: "Run an interactive teachback session using incremental explanation, a running checklist, user restatement, and quizzes. TRIGGER ONLY when the user explicitly invokes `/teachback` or says `teachback`, or explicitly asks to be quizzed or tested on their understanding. Do not trigger for ordinary requests to explain, summarize, review, walk through, or help understand something. Default with no explicit target: teach or quiz the current session and current branch changes."
+description: "Teach the user a change or feature before they ship it: a layered walkthrough page that ends in a self-grading quiz, shown inline in T3 Code or opened in the browser.\nTRIGGER ONLY when the user explicitly invokes /teachback or says teachback, or asks to be quizzed on their understanding. Do not trigger for ordinary requests to explain, summarize, or walk through something. Default target: this conversation plus the current branch's changes."
 ---
 
-# Teachback Skill
+# Teachback
 
-Help the user understand the work, not just receive a summary. Optimize for durable understanding of the problem, solution, rationale, edge cases, and impact.
+Help the user understand a change well enough to own it: the problem, the solution and why, the edge cases, and the impact. Build one page they read at their own pace, with depth on demand, ending in a quiz that tests reasoning.
 
-## Activation Guard
+## 1. Pick the target
 
-Use this workflow only for an explicit teachback or quiz request. Handle ordinary explanations, summaries, reviews, walkthroughs, and requests for help understanding something without this skill.
-
-## Scope
-
-Determine the teaching target from the request:
-
-| User says | Scope |
-|-----------|-------|
-| `/teachback` or `teachback` | Current conversation plus current branch changes, usually `git diff main...HEAD` when in a repo |
-| `/teachback current changes` | Current branch changes |
+| User says | Target |
+|---|---|
+| `/teachback` | This conversation plus the branch's changes, `git diff origin/<default branch>...HEAD` |
 | `/teachback last commit` | `git show HEAD` |
-| `/teachback <file/module/feature>` | That code area and its relevant surrounding context |
-| `/teachback <bug/spec/PR>` | That artifact plus affected implementation context |
-| `quiz me` or `test my understanding` | The explicitly named target, or the current session and branch changes when omitted |
+| `/teachback <file, module, or feature>` | That code and the code around it |
+| `/teachback <bug, spec, or PR>` | That artifact plus the code it touches |
 
-If the target is unclear, make a reasonable narrow assumption and say what you chose. Ask a question only when the ambiguity would materially change what must be taught.
+If the target is unclear, pick the narrowest reasonable one and say which.
 
-## Running Checklist
+## 2. Read it
 
-Create or update `teachback.md` in the current project root. Keep it concise and current.
+Read the diff, the code around it, the tests, and this conversation, where the reasons behind decisions live. Note what the user already discussed here. Cover that lightly and spend the depth on what they haven't seen.
 
-The document should include:
+## 3. Write the walkthrough
 
-- Teaching target and date
-- What the user should understand
-- Checklist grouped by:
-  - Problem: what happened, why it existed, branches/paths/cases involved
-  - Solution: what changed, why this approach, important design decisions
-  - Edge cases: failure modes, boundaries, regressions, surprising cases
-  - Impact: user/product effect, systems touched, operational or maintenance implications
-- Mastery status:
-  - `Not started`
-  - `Explained`
-  - `User restated`
-  - `Verified`
-- Open questions and remaining gaps
+Copy `template.html` next to this file and fill it. Keep its four layers in order: Problem, Solution, Edge cases, Impact.
 
-Update the document after each stage instead of only at the end.
+- Each layer opens with two or three sentences that stand alone. Its "Go deeper" block holds the why chain, the alternatives that were rejected and why, and the code that carries it.
+- Use three to six short code excerpts across the page, each under its `file:line`.
+- Add one flow (the `.flow` steps, or inline SVG) where it makes a sequence or a before-and-after clearer.
+- Teach the problem before the solution, and prefer why over chronology. Cut anything that doesn't help the user own the change.
 
-## Teaching Loop
+## 4. Write the quiz
 
-Work incrementally. Do not dump the entire explanation at once.
+Fill the `quiz-data` block with five to eight multiple-choice questions, each tagged with its layer, covering every layer. Ask about causes and consequences ("what happens if this runs twice", "why doesn't this break X"), not names or trivia. Make the wrong options the mistakes a smart reader would make. Every option gets a one-line `why`. The template shuffles the options and scores by layer.
 
-1. **Inspect enough context**
-   - Read the relevant conversation, diff, files, tests, docs, or runtime behavior.
-   - For code, read surrounding implementation context before teaching the change.
+Add one or two open questions with a model answer, on the ideas that matter most. The user writes their answer, then reveals yours.
 
-2. **Build the checklist**
-   - Identify the small set of concepts the user must understand.
-   - Include both high-level motivation and low-level business logic.
-   - Include the "why" chain: why the problem existed, why this solution works, why alternatives were not chosen.
-   - If a goal-tracking mechanism is available and permitted, set the success condition to verifying that the user understands every required checklist item. Otherwise, enforce that condition behaviorally in the conversation.
+## 5. Show it
 
-3. **Start with teachback**
-   - Ask the user to restate their current understanding before explaining deeply.
-   - Use their answer to decide what to explain first.
+In T3 Code, check the page with `html_preview` and fix any layout or console error, then show it with `html_render`, using the `contentHeight` from the preview. Elsewhere, write it to `/tmp/teachback/<slug>.html` and `open` it.
 
-4. **Teach one stage**
-   - Explain only the current checklist group.
-   - Prefer concrete code references, examples, traces, or debugger steps when useful.
-   - Adjust depth on request:
-     - `ELI5`: intuitive, minimal jargon
-     - `ELI14`: accurate but simplified
-     - `ELII`: explain like an intern joining the project
-
-5. **Verify before moving on**
-   - Ask the user to restate the current stage in their own words.
-   - Quiz with open-ended or multiple-choice questions.
-   - Use the available structured user-question tool when present; otherwise ask directly.
-   - Change the position/order of correct multiple-choice answers across quizzes.
-   - Do not reveal answers until after the user responds.
-
-6. **Fill gaps**
-   - Correct misunderstandings directly and kindly.
-   - Drill into additional "why" questions when the user's answer is shallow.
-   - Mark checklist items as verified only after the user demonstrates understanding.
-
-7. **Continue or finish**
-   - Move to the next stage only after the current one is verified.
-   - Do not present the session as complete until every required checklist item is verified.
-   - If the user chooses to stop early, update `teachback.md` with remaining gaps and say what remains unverified.
-
-## Quality Bar
-
-- Teach the problem before the solution.
-- Prefer "why" over chronology.
-- Keep each stage small enough for the user to restate accurately.
-- Use code, debugger steps, tests, or diagrams only when they clarify the concept.
-- Avoid trivia quizzes; test causal understanding and ability to reason through edge cases.
-- Be willing to slow down. The goal is demonstrated understanding, not a polished lecture.
+Don't restate the page in the reply. Say in one line what it covers. If the user tells you what they missed, go deeper on those layers in the thread.
