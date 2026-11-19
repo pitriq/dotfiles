@@ -31,6 +31,9 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # node via fnm
 eval "$(fnm env --use-on-cd --shell zsh)"
 
+# bun global binaries (serve-sim, serve-avd)
+export PATH="$HOME/.bun/bin":"$PATH"
+
 # local binaries
 export PATH="$HOME/.local/bin":"$PATH"
 

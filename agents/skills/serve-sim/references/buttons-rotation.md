@@ -9,7 +9,7 @@
 
 ## Valid button names
 
-These are the **only** values accepted by `npx serve-sim button <name>`. Anything else prints `[hid] Unknown button: <name>` and does nothing.
+These are the **only** values accepted by `serve-sim button <name>`. Anything else prints `[hid] Unknown button: <name>` and does nothing.
 
 | Name | Effect |
 |---|---|
@@ -41,7 +41,7 @@ A common test pattern: `lock` → wait → `lock` again wakes the device into th
 
 ## Valid orientations
 
-These are the **only** values accepted by `npx serve-sim rotate <orientation>`:
+These are the **only** values accepted by `serve-sim rotate <orientation>`:
 
 | Value | Description |
 |---|---|

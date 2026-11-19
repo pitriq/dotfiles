@@ -53,9 +53,9 @@ Group references by pattern, not by company. For each pattern: what it does stru
 
 ## 5. Propose alternatives
 
-Write 3 to 5 directions that differ in structure, not just styling. For each:
+Write 3 to 5 directions that differ in structure, not just styling. Each names the axis it differs on (layout, density, hierarchy, interaction model, motion), and no two directions share a position on an axis. If two would differ only in color or copy, they are one direction, so replace one. For each:
 
-- Name and one-sentence idea.
+- Name, axis, and one-sentence idea.
 - How it maps onto the user's actual content, with an ASCII wireframe of the element using real field names.
 - References it draws from (links).
 - Tradeoffs: what it improves and what it costs (scan speed, density, discoverability, implementation surface area in the current codebase).
@@ -64,7 +64,7 @@ Write 3 to 5 directions that differ in structure, not just styling. For each:
 
 Pick one direction, or a combination with clear boundaries, and justify it against the brief from step 1. List the specific moves to borrow (e.g. "status as a leading glyph, not a trailing pill") and anything to avoid. Point to the files and components that would change.
 
-Stop after the recommendation. Implement only if the user asks.
+Stop after the recommendation, and offer to prototype the top 2 or 3 directions so the user can flip through them live. On a yes, read `../prototype/SKILL.md` (next to this skill) and follow it, with this brief and these directions as its input. Implement directly only if the user asks.
 
 ## Output
 

@@ -1,0 +1,8 @@
+# Global CLIs with no Homebrew formula, installed with `bun add -g`.
+# One package per line. setup.sh installs them and `update_tools` upgrades them.
+# Anything with a Homebrew formula belongs in the Brewfile instead.
+
+# iOS Simulator driver for agents
+serve-sim
+# Android Emulator driver for agents
+serve-avd

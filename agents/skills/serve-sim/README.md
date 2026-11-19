@@ -61,7 +61,7 @@ The agent checks these for you, but for reference:
 - macOS 14+ if you want camera injection.
 - At least one booted iOS, iPad, or Apple Watch simulator.
 
-`serve-sim` itself is invoked via `npx serve-sim` — no global install required.
+`serve-sim` is installed globally with `bun add -g serve-sim` and called directly.
 
 ## How it's structured
 

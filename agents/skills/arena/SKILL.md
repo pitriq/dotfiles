@@ -15,7 +15,7 @@ Write a rubric of 3 to 6 criteria that a good result meets for this task. The ju
 
 ## 2. Run the candidates
 
-Spawn one candidate on `claudeAgent/claude-opus-5-5` with `effort=xhigh` and one on `codex/gpt-6.1-sol` with `reasoningEffort=xhigh`, both in one message, with `mode: "async"`. Use more seats, or the same model several times, only when the user asks. When the user says "compare with yours", write your own answer before reading theirs and enter it as one more candidate.
+Spawn one candidate on `claudeAgent/claude-fable-5-2` with `effort=xhigh` and one on `codex/gpt-6.2-astra` with `reasoningEffort=xhigh`, both in one message, with `mode: "async"`. For a high-stakes arena or one that covers several design directions, add a third on `claudeAgent/claude-opus-5-5` with `effort=xhigh`. Use more seats, or the same model several times, only when the user asks. When the user says "compare with yours", write your own answer before reading theirs and enter it as one more candidate.
 
 A candidate that writes code gets its own worktree with dependencies only, per `AGENTS.md`, and commits its work on that worktree's branch. Every other candidate is told to change no file and to return its answer in its result. Each candidate also names the strongest alternative it rejected and why.
 
@@ -23,7 +23,7 @@ If a candidate fails, continue with the rest and name it in the reply. If only o
 
 ## 3. Judge
 
-When every candidate is done, spawn the judge as a fresh child on `codex/gpt-6-astra` with `reasoningEffort=xhigh`. It ran no candidate, so it isn't scoring its own work. If it can't run, use a model that ran no candidate, else one from a different family than yours, and say which. The judge changes no file, sees the rubric and the candidates labeled A, B, C without model names, scores each criterion, and recommends a base.
+When every candidate is done, spawn the judge as a fresh child on `codex/gpt-6.2-sol` with `reasoningEffort=xhigh`. It ran no candidate and is from a different family than yours, so it isn't scoring its own work or favoring yours. If it can't run, use a model that ran no candidate, else one from a different family than yours, and say which. The judge changes no file, sees the rubric and the candidates labeled A, B, C without model names, scores each criterion with evidence (`file:line` for code, a quoted passage for text), and recommends a base.
 
 Read every candidate in full yourself while the judge runs, and score them against the rubric.
 

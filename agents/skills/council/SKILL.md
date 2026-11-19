@@ -16,8 +16,8 @@ Take the scope the caller gives. Otherwise review `git diff <base>...HEAD`, wher
 Spawn one reviewer on each of these, all in one message, with `role: "review"` and `mode: "async"` in T3:
 
 - `claudeAgent/claude-opus-5-5` with `effort=xhigh`
-- `claudeAgent/claude-fable-5-1` with `effort=xhigh`
-- `codex/gpt-6.1-sol` with `reasoningEffort=xhigh`
+- `claudeAgent/claude-fable-5-2` with `effort=xhigh`
+- `codex/gpt-6.2-astra` with `reasoningEffort=xhigh`
 
 Each brief names the absolute path of `../vet/SKILL.md` from this file, the repo's absolute path, the scope command, the intent and out-of-scope line, and which checks ran or could not run. It tells the reviewer to change no file, commit nothing, start no subagents, run steps 1 to 3 of `vet`, and return its ranked findings in that file's format, without a verdict. Don't edit the reviewed files while they run.
 

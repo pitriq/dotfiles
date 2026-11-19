@@ -9,7 +9,7 @@ set -u
 DEVICE="${1:-}"
 
 # If a helper is already running for any device, return it
-EXISTING="$(npx --yes serve-sim --list -q 2>/dev/null || echo '[]')"
+EXISTING="$(serve-sim --list -q 2>/dev/null || echo '[]')"
 if [[ "$EXISTING" != "[]" && -n "$EXISTING" ]]; then
   if [[ -n "$DEVICE" ]]; then
     MATCH="$(echo "$EXISTING" | node -e "
@@ -34,7 +34,7 @@ fi
 
 # Start a new detached helper
 if [[ -n "$DEVICE" ]]; then
-  npx --yes serve-sim --detach -q "$DEVICE"
+  serve-sim --detach -q "$DEVICE"
 else
-  npx --yes serve-sim --detach -q
+  serve-sim --detach -q
 fi

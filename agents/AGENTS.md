@@ -27,12 +27,13 @@ Write natural, direct prose and apply these rules silently. Preserve meaning, fa
 ## Routing
 
 - Browser debugging: use `$agent-browser` when opening, inspecting, automating, or debugging a browser.
-- Apple Simulator/mobile app: use `$serve-sim`.
+- iOS Simulator: slim every simulator you drive with `simslim` before the app runs, even a single one (steps in `$verify`, "Slim iOS simulators"), then use `$serve-sim`.
+- Android emulator: use `$serve-avd`, through the Android lane in `$verify`.
 - Proving a change works: use `$verify`. Done means shown on the real surface (the app, the endpoint, the command), not a green build. When a repo rule keeps you from running the app, report the change as unverified instead of done.
 
 ## Delegation
 
-- In a T3 thread, spawn subagents with `delegate_task`. A target is `providerInstanceId/model` plus options, and you always pass the effort option, because Codex models default to `low`. The default target is `claudeAgent/claude-opus-5-5` with `effort=high`, and bugs and hard problems go to `claudeAgent/claude-fable-5-1` with `effort=xhigh`. Skills that run several models name their own seats.
+- In a T3 thread, spawn subagents with `delegate_task`. A target is `providerInstanceId/model` plus options, and you always pass the effort option, because Codex models default to `low`. The default target is `claudeAgent/claude-opus-5-5` with `effort=high`, and bugs and hard problems go to `claudeAgent/claude-fable-5-2` with `effort=xhigh`. Skills that run several models name their own seats.
 - If a target is rejected, use the closest one in `orchestrator_capabilities`. Outside T3, use the harness's own subagents for the seats it can reach, and with no subagents at all, do the work in-thread. A seat that fails mid-run is dropped and the rest continue. Always say which seats ran, which were swapped, and which were skipped.
 - Delegate work that is big enough to brief, and stay the lead. A child sees only its brief, so give it the goal, absolute paths, constraints, what it must not do (commit, push, edit outside its paths), how to check its work, and what to report (what it ran, where it deviated, what is open). A child does not delegate, run an arena, or drive the app unless its brief says to. Review every child's diff yourself and report your own conclusions, not its summary.
 - A fix round or follow-up goes to a fresh child with the original brief and the prior report. If the old child could still write, `task_cancel` it and wait until `task_status` shows it terminal before the new one starts.

@@ -15,7 +15,7 @@ When you stop, ask with the harness's question tool (`AskUserQuestion` in Claude
 
 A fork you can settle by running something (behavior, layout, performance, what a library does) is not a product decision. Run a quick throwaway check and let the result decide.
 
-Never ask whether to run an arena, a blast-radius check, or a review. This file decides. Skip any of them when the user says so.
+Never ask whether to run an arena, a worst-case data pass, a blast-radius check, or a review. This file decides. Skip any of them when the user says so.
 
 Commit locally at each stage boundary: the repro, the implementation, the deslop pass, and each round of review fixes. Every review then covers `git diff <base>...HEAD`, new files included, where `<base>` is the remote branch this one merges into, such as `origin/main`, fetched first. A local `main` can be far behind. Pass that scope in each brief. Before the first commit, read the repo's commit hooks (`git config core.hooksPath`, else `.git/hooks`). If one pushes, stop and ask.
 
@@ -56,17 +56,17 @@ Commit the implementation. Then spawn a fresh child to run `/deslop` on `<base>.
 
 ## 5. Prove it
 
-Run the repo's own checks for the files you changed, then `$verify` on the surface the change affects. A failed check sends you back to step 4. A required check that could not run makes the result inconclusive. Say so, and don't report the build as done.
+Run the repo's own checks for the files you changed, then `$verify` on the surface the change affects. If the diff adds or changes fields the UI renders, run `/break-ui` on them in its `/build` mode, at any size. Commit its fixes as their own stage. A failed check sends you back to step 4. A required check that could not run makes the result inconclusive. Say so, and don't report the build as done.
 
 ## 6. Check for breakage and review
 
-Medium and Large builds run this step. Run `/blast-radius` and `/council` on `<base>...HEAD` in parallel. `/council` fixes its own findings and runs its follow-up round. Fix each confirmed blast-radius risk the same way, with the smallest fix in the case the change is for. Commit the fixes and rerun step 5.
+Medium and Large builds run this step. Run `/blast-radius` and `/council` on `<base>...HEAD` in parallel. `/council` fixes its own findings and runs its follow-up round. Fix each confirmed blast-radius risk the same way, with the smallest fix in the case the change is for. Commit the fixes, then rerun the repo's checks for the files they touched. Run `$verify` again, and `/break-ui` if the fixes touched fields it covered, only when a fix changed behavior the user can see or a request, row, or event the first run recorded. A fix that only renames, narrows a type, or reorganizes code without changing what runs keeps the earlier evidence. Name which case applied in the reply.
 
 ## 7. Commit and hand off
 
 Squash the stage commits into small ordered commits that each make sense alone. If the user is iterating on UI, leave the stage commits until they say it's done.
 
-Open a PR only when the request asked for one or the user agrees when you offer. Fetch and rebase onto the latest base first, and rerun step 5 if the rebase touched the files you changed. Open a real PR, not a draft, so review bots run, then run `/babysit-pr`. Never merge unless the user said to.
+Open a PR only when the request asked for one or the user agrees when you offer. Fetch and rebase onto the latest base first, and rerun step 5 if the rebase touched the files you changed. Open it as a draft. Checks run on drafts, and review bots wait until the user marks it ready. Run `/babysit-pr` until the checks are green (`pr-wait --until green` outside T3, since a draft never gets bot reviews), then tell the user it's ready to mark ready for review. Never mark it ready or merge unless the user said to.
 
 ## Large
 
@@ -78,4 +78,4 @@ Open a PR only when the request asked for one or the user agrees when you offer.
 
 ## Reply
 
-The size and why, what changed for the user, the decisions you made for them, the evidence (embed screenshots), the design picked and why, what blast-radius and review found and what you fixed, and anything still open or unverified. End with the dispatch ledger: one line per step with the model that ran it, or `in-thread` or `skipped` with the reason.
+The size and why, what changed for the user, the decisions you made for them, the evidence (embed screenshots), the design picked and why, what break-ui, blast-radius, and review found and what you fixed, and anything still open or unverified. End with the dispatch ledger: one line per step with the model that ran it, or `in-thread` or `skipped` with the reason.

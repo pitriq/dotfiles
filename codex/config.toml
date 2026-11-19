@@ -1,4 +1,4 @@
-model = "gpt-6.1-sol"
+model = "gpt-6.2-sol"
 model_reasoning_effort = "high"
 
 [features]
@@ -8,25 +8,13 @@ hooks = true
 network_access = true
 
 [tui]
-status_line = [
-  "current-dir",
-  "git-branch",
-  "pull-request-number",
-  "model-with-reasoning",
-  "context-used",
-]
-terminal_title = ["spinner", "project"]
+status_line = [ "current-dir", "git-branch", "pull-request-number", "model-with-reasoning", "context-used" ]
+terminal_title = [ "spinner", "project" ]
 screen_reader_detection_done = true
 
 [tui.model_availability_nux]
 gpt-6-astra = 4
 "gpt-6.1-sol" = 3
-
-[[hooks.UserPromptSubmit]]
-[[hooks.UserPromptSubmit.hooks]]
-type = "command"
-command = "bash ~/.codex/hooks/caffeinate.sh"
-timeout = 10
 
 [[hooks.Stop]]
 [[hooks.Stop.hooks]]
@@ -34,18 +22,11 @@ type = "command"
 command = "bash ~/.codex/hooks/notify.sh"
 timeout = 10
 
-[[hooks.Stop.hooks]]
-type = "command"
-command = "bash ~/.codex/hooks/caffeinate.sh"
-timeout = 10
-
 [[hooks.PermissionRequest]]
 [[hooks.PermissionRequest.hooks]]
 type = "command"
 command = "bash ~/.codex/hooks/notify.sh"
 timeout = 10
-
-[hooks.state]
 
 [hooks.state."/Users/pitriq/.codex/config.toml:stop:0:0"]
 trusted_hash = "sha256:fb98d4db621a04e0257cd05c5a6a65670b64f5d09ae0ddb754a4ec41a185f956"
@@ -61,12 +42,6 @@ trusted_hash = "sha256:50ca1440b9999305a92527504136ffa577cb5b047e4bc539e45b9756a
 
 [hooks.state."/Users/pitriq/Developer/apps/trashlab/trashlab/.codex/hooks.json:stop:0:0"]
 trusted_hash = "sha256:8f9011fab48c663162e0db8f02bdda9d5336324f8332de45e684e79aea30123a"
-
-[hooks.state."/Users/pitriq/.codex/config.toml:user_prompt_submit:0:0"]
-trusted_hash = "sha256:2274d01dd0cc3fc39a33bb65942e6a5ba9cafe227f903bf9464968f691e18c8a"
-
-[hooks.state."/Users/pitriq/.codex/config.toml:stop:0:1"]
-trusted_hash = "sha256:c562c26fb0a711facc7f41c04fa21c8d2d7cb19301bd4dadd65199d1961739aa"
 
 [hooks.state."/Users/pitriq/.codex/hooks.json:session_start:0:0"]
 trusted_hash = "sha256:a21c9c4698f761f05590c4b694e4f6f249966759c7a36628d8ad07c28b021b07"
@@ -97,3 +72,7 @@ trust_level = "trusted"
 
 [notice]
 hide_rate_limit_model_nudge = true
+
+[mcp_servers.pencil]
+command = "/Applications/Pen.app/Contents/Resources/app.asar.unpacked/out/mcp-server-darwin-arm64"
+args = [ "--app", "desktop", "--agent", "codexCLI" ]

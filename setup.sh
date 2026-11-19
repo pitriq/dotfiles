@@ -93,6 +93,14 @@ lns Brewfile ~/Brewfile
 echo "📦 Installing brew packages..."
 brew bundle --file="$SCRIPT_DIR/Brewfile"
 
+# Download Chrome for Testing for agent-browser
+echo "📦 Setting up agent-browser..."
+agent-browser install
+
+# Global CLIs with no Homebrew formula
+echo "📦 Installing bun globals..."
+grep -v -E '^[[:space:]]*(#|$)' "$SCRIPT_DIR/bun-globals.txt" | xargs bun add -g
+
 # Set up Java
 echo "📦 Setting up Java..."
 sudo ln -sfn /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk

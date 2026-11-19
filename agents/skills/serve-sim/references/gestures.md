@@ -73,14 +73,14 @@ The `edge` field flags a touch as a system edge gesture. iOS interprets edge tou
 | `3` | bottom | Bottom-edge swipe (swipe-to-home on Face ID devices) |
 | `4` | right | Right-edge swipe |
 
-For a swipe-to-home on a Face ID device, you can use `npx serve-sim button swipe_home` — it issues the correct edge-3 touch sequence for you.
+For a swipe-to-home on a Face ID device, you can use `serve-sim button swipe_home` — it issues the correct edge-3 touch sequence for you.
 
 ## Common recipes
 
 ### Tap (avoid `gesture` — use `tap`)
 
 ```sh
-npx serve-sim tap 0.5 0.5
+serve-sim tap 0.5 0.5
 ```
 
 Two back-to-back `gesture` calls for `begin` and `end` will be interpreted as a long-press because each call opens a fresh WebSocket. Always use `tap`.
@@ -92,10 +92,10 @@ A drag is a sequence on a single WebSocket. With the CLI, the simplest correct a
 For ad-hoc drags via the CLI, this minimal sequence works because it issues one socket call per phase but the simulator coalesces them when issued rapidly:
 
 ```sh
-npx serve-sim gesture '{"type":"begin","x":0.5,"y":0.2}'
-npx serve-sim gesture '{"type":"move","x":0.5,"y":0.5}'
-npx serve-sim gesture '{"type":"move","x":0.5,"y":0.8}'
-npx serve-sim gesture '{"type":"end","x":0.5,"y":0.8}'
+serve-sim gesture '{"type":"begin","x":0.5,"y":0.2}'
+serve-sim gesture '{"type":"move","x":0.5,"y":0.5}'
+serve-sim gesture '{"type":"move","x":0.5,"y":0.8}'
+serve-sim gesture '{"type":"end","x":0.5,"y":0.8}'
 ```
 
 The agent should accept that this may produce a long-press start on some hosts. For reliable drags, drive the WebSocket directly (see `references/endpoints.md`).
@@ -103,25 +103,25 @@ The agent should accept that this may produce a long-press start on some hosts. 
 ### Pinch to zoom in
 
 ```sh
-npx serve-sim gesture '{"type":"begin","x1":0.4,"y1":0.5,"x2":0.6,"y2":0.5}'
-npx serve-sim gesture '{"type":"move","x1":0.25,"y1":0.5,"x2":0.75,"y2":0.5}'
-npx serve-sim gesture '{"type":"end","x1":0.25,"y1":0.5,"x2":0.75,"y2":0.5}'
+serve-sim gesture '{"type":"begin","x1":0.4,"y1":0.5,"x2":0.6,"y2":0.5}'
+serve-sim gesture '{"type":"move","x1":0.25,"y1":0.5,"x2":0.75,"y2":0.5}'
+serve-sim gesture '{"type":"end","x1":0.25,"y1":0.5,"x2":0.75,"y2":0.5}'
 ```
 
 ### Pull down Notification Center (top edge)
 
 ```sh
-npx serve-sim gesture '{"type":"begin","x":0.5,"y":0.02,"edge":2}'
-npx serve-sim gesture '{"type":"move","x":0.5,"y":0.4,"edge":2}'
-npx serve-sim gesture '{"type":"end","x":0.5,"y":0.4,"edge":2}'
+serve-sim gesture '{"type":"begin","x":0.5,"y":0.02,"edge":2}'
+serve-sim gesture '{"type":"move","x":0.5,"y":0.4,"edge":2}'
+serve-sim gesture '{"type":"end","x":0.5,"y":0.4,"edge":2}'
 ```
 
 ### Swipe back from left edge
 
 ```sh
-npx serve-sim gesture '{"type":"begin","x":0.01,"y":0.5,"edge":1}'
-npx serve-sim gesture '{"type":"move","x":0.5,"y":0.5,"edge":1}'
-npx serve-sim gesture '{"type":"end","x":0.5,"y":0.5,"edge":1}'
+serve-sim gesture '{"type":"begin","x":0.01,"y":0.5,"edge":1}'
+serve-sim gesture '{"type":"move","x":0.5,"y":0.5,"edge":1}'
+serve-sim gesture '{"type":"end","x":0.5,"y":0.5,"edge":1}'
 ```
 
 ## Why `tap` is preferred

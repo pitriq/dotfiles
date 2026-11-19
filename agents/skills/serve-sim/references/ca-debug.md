@@ -1,6 +1,6 @@
 # CoreAnimation debug flags reference
 
-The `npx serve-sim ca-debug <option> <on|off>` command toggles CoreAnimation render-debug overlays on the running simulator. These are the same flags Simulator.app exposes under **Debug → Color Blended Layers**, etc. Each maps to a private `-[SimDevice setCADebugOption:enabled:]` call.
+The `serve-sim ca-debug <option> <on|off>` command toggles CoreAnimation render-debug overlays on the running simulator. These are the same flags Simulator.app exposes under **Debug → Color Blended Layers**, etc. Each maps to a private `-[SimDevice setCADebugOption:enabled:]` call.
 
 ## Valid options and aliases
 
@@ -20,14 +20,14 @@ The CLI accepts any of these for the second argument, case-insensitive: `on`, `o
 
 ```sh
 # Find blended layers in your app
-npx serve-sim ca-debug blended on
+serve-sim ca-debug blended on
 # ... interact with the app, screenshot the preview ...
-npx serve-sim ca-debug blended off
+serve-sim ca-debug blended off
 
 # Slow animations 10x to inspect a transition
-npx serve-sim ca-debug slow-animations on
+serve-sim ca-debug slow-animations on
 # ... drive the app, record video of the preview ...
-npx serve-sim ca-debug slow-animations off
+serve-sim ca-debug slow-animations off
 ```
 
 Toggle individually — combining `offscreen` and `blended` makes the screen unreadable.

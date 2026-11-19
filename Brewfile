@@ -2,12 +2,15 @@ tap "dart-lang/dart", trusted: true
 tap "homebrew/bundle"
 tap "jnsahaj/lumen"
 tap "leoafarias/fvm", trusted: true
+tap "mobai-app/tap"
 tap "mobile-dev-inc/tap", trusted: true
 tap "oven-sh/bun", trusted: true
 # TIFF library and utilities
 brew "libtiff"
 # New file format for still image compression
 brew "jpeg-xl"
+# Browser automation CLI for AI agents
+brew "agent-browser"
 # Official Amazon AWS command-line interface
 brew "awscli"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -96,6 +99,8 @@ brew "yt-dlp"
 brew "jnsahaj/lumen/lumen", trusted: true
 # Simple cli to manage Flutter SDK versions per project
 brew "leoafarias/fvm/fvm"
+# Slim iOS simulators by turning off background daemons they do not need
+brew "mobai-app/tap/simslim"
 # The easiest way to automate UI testing for your mobile app
 brew "mobile-dev-inc/tap/maestro"
 # Incredibly fast JavaScript runtime, bundler, transpiler and package manager - all in one.
