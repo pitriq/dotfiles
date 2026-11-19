@@ -136,11 +136,6 @@ lns codex/config.toml ~/.codex/config.toml
 mkdir -p ~/.codex/rules
 lns codex/rules/default.rules ~/.codex/rules/default.rules
 
-# Set up Conductor (Conductor-specific config)
-echo "🤖 Setting up Conductor..."
-mkdir -p ~/.conductor
-lns conductor/settings.toml ~/.conductor/settings.toml
-
 # Set wallpaper
 echo "🖼️ Setting wallpaper..."
 osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$SCRIPT_DIR/raven-ivan-belikov.webp\""

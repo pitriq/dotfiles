@@ -64,9 +64,6 @@ trust_level = "trusted"
 [projects."/Users/pitriq/Developer/sandbox/panini-2026"]
 trust_level = "trusted"
 
-[projects."/Users/pitriq/Library/Application Support/com.conductor.app/bin"]
-trust_level = "trusted"
-
 [projects."/Users/pitriq/Desktop"]
 trust_level = "trusted"
 
